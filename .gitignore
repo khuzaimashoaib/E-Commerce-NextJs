@@ -1,0 +1,59 @@
+# =========================
+# Frontend (Next.js)
+# =========================
+
+# Dependencies
+front-end/node_modules/
+front-end/.pnp
+front-end/.pnp.*
+front-end/.yarn/*
+!front-end/.yarn/patches
+!front-end/.yarn/plugins
+!front-end/.yarn/releases
+!front-end/.yarn/versions
+
+# Testing
+front-end/coverage/
+
+# Next.js
+front-end/.next/
+front-end/out/
+
+# Production
+front-end/build/
+
+# Environment
+front-end/.env*
+front-end/.vercel/
+
+# TypeScript
+front-end/*.tsbuildinfo
+front-end/next-env.d.ts
+
+# =========================
+# Backend
+# =========================
+
+back-end/node_modules/
+back-end/.env*
+back-end/build/
+back-end/dist/
+back-end/coverage/
+
+# =========================
+# Logs
+# =========================
+
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# =========================
+# OS / Misc
+# =========================
+
+.DS_Store
+Thumbs.db
+*.pem
