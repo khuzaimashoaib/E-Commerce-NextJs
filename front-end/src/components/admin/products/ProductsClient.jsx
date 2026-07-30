@@ -3,8 +3,8 @@
 import { useState } from "react";
 import AdminTable from "../ui/AdminTable";
 import AdminBadge from "../ui/AdminBadge";
-import AdminModal from "../ui/AdminModal";
 import AdminPageHeader from "../ui/AdminPageHeader";
+import Link from "next/link";
 
 const STATIC_PRODUCTS = [
   {
@@ -41,7 +41,6 @@ const COLUMNS = [
 ];
 
 export default function ProductsClient() {
-  const [showModal, setShowModal] = useState(false);
   const [products] = useState(STATIC_PRODUCTS);
 
   return (
@@ -50,10 +49,10 @@ export default function ProductsClient() {
       <div className="d-flex justify-content-between align-items-center mb-3">
         <AdminPageHeader title="Products" />
 
-        <button className="admin-add-btn" onClick={() => setShowModal(true)}>
+        <Link href="/dashboard/products/add" className="admin-add-btn">
           <i className="fa-solid fa-plus"></i>
           Add Product
-        </button>
+        </Link>
       </div>
 
       <AdminTable columns={COLUMNS} isEmpty={products.length === 0}>
@@ -87,9 +86,12 @@ export default function ProductsClient() {
             </td>
             <td>
               <div className="admin-action-btns">
-                <button className="admin-btn-edit">
+                <Link
+                  href={`/dashboard/products/${product._id}/edit`}
+                  className="admin-btn-edit"
+                >
                   <i className="fa-solid fa-pen"></i>
-                </button>
+                </Link>
                 <button className="admin-btn-delete">
                   <i className="fa-solid fa-trash"></i>
                 </button>
@@ -98,75 +100,6 @@ export default function ProductsClient() {
           </tr>
         ))}
       </AdminTable>
-
-      {showModal && (
-        <AdminModal title="Add Product" onClose={() => setShowModal(false)}>
-          <div className="row g-3">
-            <div className="col-md-6">
-              <label className="admin-label">Product Name</label>
-              <input
-                type="text"
-                className="admin-input"
-                placeholder="Enter product name"
-              />
-            </div>
-            <div className="col-md-6">
-              <label className="admin-label">Category</label>
-              <select className="admin-input">
-                <option>Select category</option>
-                <option>Football T-Shirts</option>
-                <option>Shoes</option>
-                <option>Gloves</option>
-              </select>
-            </div>
-            <div className="col-md-6">
-              <label className="admin-label">Price</label>
-              <input
-                type="number"
-                className="admin-input"
-                placeholder="$0.00"
-              />
-            </div>
-            <div className="col-md-6">
-              <label className="admin-label">Discount Price</label>
-              <input
-                type="number"
-                className="admin-input"
-                placeholder="$0.00"
-              />
-            </div>
-            <div className="col-md-12">
-              <label className="admin-label">Brand</label>
-              <input
-                type="text"
-                className="admin-input"
-                placeholder="e.g. Nike"
-              />
-            </div>
-            <div className="col-md-12">
-              <label className="admin-label">Description</label>
-              <textarea
-                className="admin-input"
-                rows="3"
-                placeholder="Product description..."
-              ></textarea>
-            </div>
-            <div className="col-md-12">
-              <label className="admin-label">Product Image</label>
-              <input type="file" className="admin-input" accept="image/*" />
-            </div>
-            <div className="col-md-12 d-flex gap-2 justify-content-end">
-              <button
-                className="admin-btn-cancel"
-                onClick={() => setShowModal(false)}
-              >
-                Cancel
-              </button>
-              <button className="admin-btn-save">Save Product</button>
-            </div>
-          </div>
-        </AdminModal>
-      )}
     </>
   );
 }
