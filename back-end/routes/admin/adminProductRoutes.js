@@ -11,9 +11,9 @@ import {
 const router = express.Router();
 router.use(protect, adminOnly);
 
-router.get("/products", getAdminProducts);
-router.post("/products", upload.single("image"), createProduct);
-router.put("/products/:id", upload.single("image"), updateProduct);
-router.delete("/products/:id", deleteProduct);
+router.get("/", getAdminProducts);
+router.post("/", upload.single("image"), createProduct);
+router.put("/:id", upload.single("image"), updateProduct);
+router.delete("/:id", deleteProduct);
 
 export default router;

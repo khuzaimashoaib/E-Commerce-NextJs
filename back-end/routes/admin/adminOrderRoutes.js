@@ -8,7 +8,7 @@ import {
 const router = express.Router();
 router.use(protect, adminOnly);
 
-router.get("/orders", getAdminOrders);
-router.put("/orders/:id", updateOrderStatus);
+router.get("/", getAdminOrders);
+router.put("/:id", updateOrderStatus);
 
 export default router;

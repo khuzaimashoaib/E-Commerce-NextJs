@@ -11,9 +11,9 @@ import {
 const router = express.Router();
 router.use(protect, adminOnly);
 
-router.get("/categories", getAdminCategories);
-router.post("/categories", upload.single("image"), createCategory);
-router.put("/categories/:id", upload.single("image"), updateCategory);
-router.delete("/categories/:id", deleteCategory);
+router.get("/", getAdminCategories);
+router.post("/", upload.single("image"), createCategory);
+router.put("/:id", upload.single("image"), updateCategory);
+router.delete("/:id", deleteCategory);
 
 export default router;

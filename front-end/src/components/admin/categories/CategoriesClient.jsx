@@ -28,14 +28,11 @@ export default function CategoriesClient() {
 
   return (
     <>
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <AdminPageHeader title="Categories" />
-
-        <button className="admin-add-btn" onClick={() => setShowModal(true)}>
-          <i className="fa-solid fa-plus"></i>
-          Add Category
-        </button>
-      </div>
+      <AdminPageHeader
+        title="Categories"
+        actionText="Add Category"
+        onActionClick={() => setShowModal(true)}
+      />
 
       <AdminTable columns={COLUMNS} isEmpty={categories.length === 0}>
         {categories.map((category, index) => (

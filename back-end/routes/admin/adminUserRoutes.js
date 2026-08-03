@@ -10,8 +10,8 @@ const router = express.Router();
 
 router.use(protect, adminOnly);
 
-router.get("/users", getAdminUsers);
-router.delete("/users/:id", deleteUser);
-router.put("/users/:id/role", updateUserRole);
+router.get("/", getAdminUsers);
+router.delete("/:id", deleteUser);
+router.put("/:id/role", updateUserRole);
 
 export default router;

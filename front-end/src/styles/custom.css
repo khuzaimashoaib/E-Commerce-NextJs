@@ -252,11 +252,11 @@
 }
 
 /* ─── Page Header ───────────────────────────── */
-.admin-page-header {
+/* .admin-page-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-}
+} */
 
 .admin-page-title {
   font-size: 20px;
@@ -756,4 +756,77 @@
   font-size: 12px;
   color: #999;
   margin-top: 2px;
+}
+/* ─── Attribute Values ──────────────────────── */
+.admin-attribute-values {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.admin-value-tag {
+  padding: 4px 10px;
+  background: #f0f4ff;
+  color: #4361ee;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid #c8d5ff;
+}
+
+/* ─── Tag Input ─────────────────────────────── */
+.admin-tag-input {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  min-height: 48px;
+  align-items: center;
+  cursor: text;
+  transition: border-color 0.2s;
+  margin-bottom: 6px;
+}
+
+.admin-tag-input:focus-within {
+  border-color: var(--color-primary, #1a1a2e);
+}
+
+.admin-tag {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: var(--color-primary, #1a1a2e);
+  color: #fff;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.admin-tag button {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  padding: 0;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s;
+}
+
+.admin-tag button:hover {
+  color: #fff;
+}
+
+.admin-tag-input input {
+  border: none;
+  outline: none;
+  font-size: 13px;
+  color: #333;
+  flex: 1;
+  min-width: 150px;
+  background: transparent;
 }

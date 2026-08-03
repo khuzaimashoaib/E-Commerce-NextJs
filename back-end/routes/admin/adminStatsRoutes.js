@@ -5,6 +5,6 @@ import { getDashboardStats } from "../../controllers/admin/adminStatsController.
 const router = express.Router();
 router.use(protect, adminOnly);
 
-router.get("/stats", getDashboardStats);
+router.get("/", getDashboardStats);
 
 export default router;

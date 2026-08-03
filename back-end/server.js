@@ -13,6 +13,7 @@ import adminCategoryRoutes from "./routes/admin/adminCategoryRoutes.js";
 import adminUserRoutes from "./routes/admin/adminUserRoutes.js";
 import adminOrderRoutes from "./routes/admin/adminOrderRoutes.js";
 import adminStatsRoutes from "./routes/admin/adminStatsRoutes.js";
+import adminAttributeRoutes from "./routes/admin/adminAttributeRoutes.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -43,11 +44,12 @@ app.get("/", (req, res) => {
 app.use("/api/products", productRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/auth", authRoutes);
-app.use("/api/admin", adminProductRoutes);
-app.use("/api/admin", adminCategoryRoutes);
-app.use("/api/admin", adminUserRoutes);
-app.use("/api/admin", adminOrderRoutes);
-app.use("/api/admin", adminStatsRoutes);
+app.use("/api/admin/products", adminProductRoutes);
+app.use("/api/admin/categories", adminCategoryRoutes);
+app.use("/api/admin/users", adminUserRoutes);
+app.use("/api/admin/orders", adminOrderRoutes);
+app.use("/api/admin/stats", adminStatsRoutes);
+app.use("/api/admin/attributes", adminAttributeRoutes);
 
 const PORT = process.env.PORT || 5000;
 

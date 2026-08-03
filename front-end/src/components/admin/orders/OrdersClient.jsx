@@ -79,9 +79,9 @@ export default function OrdersClient() {
   return (
     <>
       {/* Status Filter Tabs */}
-      <div className="d-flex justify-content-between align-items-center">
-        <AdminPageHeader title="Orders" />
-        <div className="admin-filter-tabs">
+      <div className="d-flex justify-content-between align-items-center ">
+        <AdminPageHeader title="Orders" className="mb-0" />
+        <div className="admin-filter-tabs ">
           {STATUSES.map((status) => (
             <button
               key={status}

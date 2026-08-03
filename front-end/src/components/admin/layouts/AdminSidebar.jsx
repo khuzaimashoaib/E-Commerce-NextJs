@@ -21,6 +21,11 @@ const NAV_ITEMS = [
     icon: "fa-solid fa-tags",
   },
   {
+    label: "Attributes",
+    href: "/dashboard/attributes",
+    icon: "fa-solid fa-list-check",
+  },
+  {
     label: "Orders",
     href: "/dashboard/orders",
     icon: "fa-solid fa-bag-shopping",
