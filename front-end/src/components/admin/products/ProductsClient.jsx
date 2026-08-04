@@ -45,15 +45,12 @@ export default function ProductsClient() {
 
   return (
     <>
-      {/* Add Product Button */}
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <AdminPageHeader title="Products" />
-
-        <Link href="/dashboard/products/add" className="admin-add-btn">
-          <i className="fa-solid fa-plus"></i>
-          Add Product
-        </Link>
-      </div>
+      <AdminPageHeader
+        title="Products"
+        actionText="Add Product"
+        actionHref="/dashboard/products/add"
+        className="mb-3"
+      />
 
       <AdminTable columns={COLUMNS} isEmpty={products.length === 0}>
         {products.map((product, index) => (

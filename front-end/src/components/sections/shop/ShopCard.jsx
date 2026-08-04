@@ -1,3 +1,4 @@
+import { getImageUrl } from "@/lib/utils/imageUtils";
 import Link from "next/link";
 import React from "react";
 
@@ -19,12 +20,12 @@ const ShopCard = ({ product }) => {
         <Link href={`/shop/${slug}`}>
           <img
             className="font-image"
-            src={images[0] || "/assets/img/placeholder.jpg"}
+            src={getImageUrl(images[0]) || "/assets/img/placeholder.jpg"}
             alt={name}
           />
           <img
             className="back-image"
-            src={images[1] || images[0] || "/assets/img/placeholder.jpg"}
+            src={getImageUrl(images[0]) || "/assets/img/placeholder.jpg"}
             alt={name}
           />
         </Link>

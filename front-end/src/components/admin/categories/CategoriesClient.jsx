@@ -1,54 +1,94 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AdminModal from "@/components/admin/ui/AdminModal";
 import AdminTable from "@/components/admin/ui/AdminTable";
 import AdminPageHeader from "../ui/AdminPageHeader";
+import { deleteCategory, getAdminCategories } from "@/lib/api";
+import Link from "next/link";
+import { getImageUrl } from "@/lib/utils/imageUtils";
 
-const STATIC_CATEGORIES = [
-  {
-    _id: "1",
-    name: "Football T-Shirts",
-    slug: "football-tshirts",
-    products: 5,
-  },
-  { _id: "2", name: "Shorts", slug: "shorts", products: 3 },
-  { _id: "3", name: "Gloves", slug: "gloves", products: 2 },
-  { _id: "4", name: "Shin Guards", slug: "shin-guards", products: 4 },
-  { _id: "5", name: "Socks", slug: "socks", products: 6 },
-  { _id: "6", name: "Shoes", slug: "shoes", products: 8 },
-  { _id: "7", name: "Footballs", slug: "footballs", products: 3 },
-];
-
-const COLUMNS = ["#", "Name", "Slug", "Products", "Actions"];
+const COLUMNS = ["#", "Image", "Name", "Slug", "Products", "Actions"];
 
 export default function CategoriesClient() {
-  const [showModal, setShowModal] = useState(false);
-  const [categories] = useState(STATIC_CATEGORIES);
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchCategories = async () => {
+    try {
+      const data = await getAdminCategories();
+      setCategories(data);
+    } catch (error) {
+      console.error("Failed to fetch categories:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const handleDelete = async (id, name) => {
+    if (!confirm(`Delete category "${name}"?`)) return;
+    try {
+      await deleteCategory(id);
+      setCategories((prev) => prev.filter((c) => c._id !== id));
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="admin-loading">
+        <i className="fa-solid fa-spinner fa-spin"></i>
+        <span>Loading categories...</span>
+      </div>
+    );
+  }
 
   return (
     <>
-      <AdminPageHeader
-        title="Categories"
-        actionText="Add Category"
-        onActionClick={() => setShowModal(true)}
-      />
-
       <AdminTable columns={COLUMNS} isEmpty={categories.length === 0}>
         {categories.map((category, index) => (
           <tr key={category._id}>
             <td>{index + 1}</td>
-            <td>{category.name}</td>
+            <td>
+              {category.image ? (
+                <img
+                  src={getImageUrl(category.image)}
+                  alt={category.name}
+                  className="admin-table-img"
+                />
+              ) : (
+                <div className="admin-table-img-placeholder">
+                  <i className="fa-solid fa-image"></i>
+                </div>
+              )}
+              {/* <div className="admin-table-img-placeholder">
+                <i className="fa-solid fa-image"></i>
+              </div> */}
+            </td>
+            <td>
+              <strong>{category.name}</strong>
+            </td>
             <td>
               <span className="admin-slug">{category.slug}</span>
             </td>
-            <td>{category.products} products</td>
+            <td>{category.productCount ?? 0} products</td>
             <td>
               <div className="admin-action-btns">
-                <button className="admin-btn-edit">
+                <Link
+                  href={`/dashboard/categories/${category._id}/edit`}
+                  className="admin-btn-edit"
+                >
                   <i className="fa-solid fa-pen"></i>
-                </button>
-                <button className="admin-btn-delete">
+                </Link>
+                <button
+                  className="admin-btn-delete"
+                  onClick={() => handleDelete(category._id, category.name)}
+                >
                   <i className="fa-solid fa-trash"></i>
                 </button>
               </div>
@@ -56,42 +96,6 @@ export default function CategoriesClient() {
           </tr>
         ))}
       </AdminTable>
-
-      {showModal && (
-        <AdminModal title="Add Category" onClose={() => setShowModal(false)}>
-          <div className="row g-3">
-            <div className="col-md-12">
-              <label className="admin-label">Category Name</label>
-              <input
-                type="text"
-                className="admin-input"
-                placeholder="e.g. Football T-Shirts"
-              />
-            </div>
-            <div className="col-md-12">
-              <label className="admin-label">Slug</label>
-              <input
-                type="text"
-                className="admin-input"
-                placeholder="e.g. football-tshirts"
-              />
-            </div>
-            <div className="col-md-12">
-              <label className="admin-label">Category Image</label>
-              <input type="file" className="admin-input" accept="image/*" />
-            </div>
-            <div className="col-md-12 d-flex gap-2 justify-content-end">
-              <button
-                className="admin-btn-cancel"
-                onClick={() => setShowModal(false)}
-              >
-                Cancel
-              </button>
-              <button className="admin-btn-save">Save Category</button>
-            </div>
-          </div>
-        </AdminModal>
-      )}
     </>
   );
 }

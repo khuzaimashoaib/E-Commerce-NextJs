@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import AdminTable from "../ui/AdminTable";
 import { deleteAttribute, getAdminAttributes } from "@/lib/api";
 import Link from "next/link";
-import AdminPageHeader from "../ui/AdminPageHeader";
 
 const COLUMNS = ["#", "Attribute Name", "Values", "Actions"];
 
@@ -46,12 +45,6 @@ const AttributesClient = () => {
   }
   return (
     <>
-      <AdminPageHeader
-        title="Attributes"
-        actionText="Add Attribute"
-        actionHref="/dashboard/attributes/add"
-      />
-
       <AdminTable columns={COLUMNS} isEmpty={attributes.length === 0}>
         {attributes.map((attr, index) => (
           <tr key={attr._id}>
