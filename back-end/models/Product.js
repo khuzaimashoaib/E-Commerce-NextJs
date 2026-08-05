@@ -2,13 +2,10 @@ import mongoose from "mongoose";
 
 const variantSchema = new mongoose.Schema(
   {
-    size: {
-      type: String, // e.g. "S", "M", "L", "XL" or "7", "8", "9" for shoes
-      required: true,
-    },
-    color: {
-      type: String, // e.g. "Red", "Black" — optional for some products
-      default: "",
+    attributes: {
+      type: Map,
+      of: String, // { "Size": "M", "Color": "Red" }
+      default: {},
     },
     stock: {
       type: Number,
@@ -16,7 +13,7 @@ const variantSchema = new mongoose.Schema(
       default: 0,
     },
     sku: {
-      type: String, // unique code per variant, e.g. "SHO-NIKE-9-BLK"
+      type: String,
       required: true,
     },
   },

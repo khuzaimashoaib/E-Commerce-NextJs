@@ -1,16 +1,16 @@
-import React from 'react'
+import React from "react";
 
 const Hero = () => {
   return (
-   <section className="hero-section-4">
+    <section className="hero-section-4">
       <div className="swiper banner-active">
         <div className="swiper-wrapper">
           <div className="swiper-slide">
             <div
               className="hero-4 bg-cover"
-             style={{
-  backgroundImage: "url('/assets/img/home-4/hero-bg.jpg')",
-}}
+              style={{
+                backgroundColor: "#a0c8f7",
+              }}
             >
               <div className="container">
                 <div className="row align-items-center">
@@ -24,15 +24,20 @@ const Hero = () => {
                       <p>Discover Exquisite Pieces for Every Occasion.</p>
                     </div>
                     <div className="hero-button">
-                      <a href="shop.html" className="theme-btn">Explore More</a>
+                      <a href="shop.html" className="theme-btn">
+                        Explore More
+                      </a>
                     </div>
                   </div>
                   <div className="col-lg-6">
                     <div className="hero-image">
-                      <img src="assets/img/home-4/hero-1.jpg" alt="" />
+                      <img src="assets/front-end-images/home-img.webp" alt="" />
                       <div className="icon-box ">
                         <div className="icon">
-                          <img src="assets/img/home-4/icon.png" alt="" />
+                          <img
+                            src="assets/front-end-images/hero-s-img.png"
+                            alt=""
+                          />
                         </div>
                         <div className="discount">
                           <img src="assets/img/home-4/dis.png" alt="" />
@@ -44,12 +49,10 @@ const Hero = () => {
               </div>
             </div>
           </div>
-          
         </div>
       </div>
-    
     </section>
-  )
-}
+  );
+};
 
-export default Hero
+export default Hero;

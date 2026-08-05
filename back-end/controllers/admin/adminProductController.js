@@ -42,6 +42,12 @@ export const createProduct = async (req, res) => {
     const parsedVariants =
       typeof variants === "string" ? JSON.parse(variants) : variants;
 
+    const cleanVariants = parsedVariants.map((v) => ({
+      attributes: v.attributes || {},
+      stock: Number(v.stock) || 0,
+      sku: v.sku || "",
+    }));
+
     const product = await Product.create({
       name,
       slug,
@@ -52,7 +58,7 @@ export const createProduct = async (req, res) => {
       description,
       isFeatured: isFeatured === "true" || isFeatured === true,
       images: image ? [image] : [],
-      variants: parsedVariants || [],
+      variants: cleanVariants || [],
     });
 
     res.status(201).json(product);
@@ -83,6 +89,11 @@ export const updateProduct = async (req, res) => {
 
     const parsedVariants =
       typeof variants === "string" ? JSON.parse(variants) : variants;
+    const cleanVariants = parsedVariants.map((v) => ({
+      attributes: v.attributes || {},
+      stock: Number(v.stock) || 0,
+      sku: v.sku || "",
+    }));
 
     product.name = name;
     product.slug = generateSlug(name);
@@ -92,7 +103,7 @@ export const updateProduct = async (req, res) => {
     product.discountPrice = Number(discountPrice) || 0;
     product.description = description;
     product.isFeatured = isFeatured === "true" || isFeatured === true;
-    product.variants = parsedVariants || product.variants;
+    product.variants = cleanVariants;
     if (image) product.images = [image];
 
     const updated = await product.save();

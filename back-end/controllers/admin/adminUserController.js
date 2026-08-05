@@ -5,8 +5,16 @@ import User from "../../models/User.js";
 // @route  GET /api/admin/users
 export const getAdminUsers = async (req, res) => {
   try {
-    const users = await User.find().select("-password").sort({ createdAt: -1 });
-    res.json(users);
+    // Fetch admins first then customers separately
+    const admins = await User.find({ role: "admin" })
+      .select("-password")
+      .sort({ createdAt: -1 });
+
+    const customers = await User.find({ role: "customer" })
+      .select("-password")
+      .sort({ createdAt: -1 });
+
+    res.json([...admins, ...customers]);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
