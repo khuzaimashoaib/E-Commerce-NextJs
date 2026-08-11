@@ -3,31 +3,14 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-
-const CATEGORIES = [
-  "Football T-Shirts",
-  "Shorts",
-  "Gloves",
-  "Shin Guards",
-  "Socks",
-  "Shoes",
-  "Footballs",
-];
-
-const SIZES = [
-  "XS",
-  "S",
-  "M",
-  "L",
-  "XL",
-  "XXL",
-  "6",
-  "7",
-  "8",
-  "9",
-  "10",
-  "11",
-];
+import {
+  createProduct,
+  updateProduct,
+  getAdminProducts,
+  getAdminCategories,
+  getAttributes,
+} from "@/lib/api";
+import { getImageUrl } from "@/lib/utils/imageUtils";
 
 const DEFAULT_FORM = {
   name: "",
@@ -39,56 +22,75 @@ const DEFAULT_FORM = {
   isFeatured: false,
 };
 
-const DEFAULT_VARIANT = { size: "", color: "", stock: "", sku: "" };
+const DEFAULT_VARIANT = { attributes: {}, stock: "", sku: "" };
 
 export default function ProductForm({ productId }) {
   const router = useRouter();
-  const isEditing = Boolean(productId); // ← true = edit, false = add
+  const isEditing = Boolean(productId);
 
   const [form, setForm] = useState(DEFAULT_FORM);
-  const [variants, setVariants] = useState([DEFAULT_VARIANT]);
+  const [variants, setVariants] = useState([{ ...DEFAULT_VARIANT }]);
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
+  const [categories, setCategories] = useState([]);
+  const [attributes, setAttributesList] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [fetchLoading, setFetchLoading] = useState(isEditing);
+  const [fetchLoading, setFetchLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  // If editing — fetch existing product data
+  // Fetch categories + attributes on mount
   useEffect(() => {
-    if (!isEditing) return;
+    const fetchData = async () => {
+      try {
+        const [catsData, attrsData] = await Promise.all([
+          getAdminCategories(),
+          getAttributes(),
+        ]);
+        console.log("Categories:", catsData); // ← add this
+        console.log("Attributes:", attrsData); // ← add this
+        setCategories(catsData);
+        setAttributesList(attrsData);
+      } catch (err) {
+        setError("Failed to load form data");
+      }
+    };
+    fetchData();
+  }, []);
+
+  // If editing — fetch existing product
+  useEffect(() => {
+    if (!isEditing) {
+      setFetchLoading(false);
+      return;
+    }
 
     const fetchProduct = async () => {
       try {
-        // Will connect to real API later
-        // Simulating fetched product for now
-        const mockProduct = {
-          name: "Nike Dri-FIT Football Jersey",
-          category: "Football T-Shirts",
-          brand: "Nike",
-          price: "45",
-          discountPrice: "35",
-          description: "Lightweight, breathable football jersey.",
-          isFeatured: true,
-          images: ["/assets/front-end-images/placeholder.jpg"],
-          variants: [
-            { size: "S", color: "Red", stock: "10", sku: "TSH-NIKE-S-RED" },
-            { size: "M", color: "Red", stock: "15", sku: "TSH-NIKE-M-RED" },
-          ],
-        };
-
-        // Pre-fill form with existing data
-        setForm({
-          name: mockProduct.name,
-          category: mockProduct.category,
-          brand: mockProduct.brand,
-          price: mockProduct.price,
-          discountPrice: mockProduct.discountPrice,
-          description: mockProduct.description,
-          isFeatured: mockProduct.isFeatured,
-        });
-        setVariants(mockProduct.variants);
-        setImagePreview(mockProduct.images?.[0] || null);
-      } catch (error) {
-        console.error("Failed to fetch product:", error);
+        const data = await getAdminProducts();
+        const product = data.find((p) => p._id === productId);
+        if (product) {
+          setForm({
+            name: product.name,
+            category: product.category?._id || "",
+            brand: product.brand || "",
+            price: product.price,
+            discountPrice: product.discountPrice || "",
+            description: product.description,
+            isFeatured: product.isFeatured,
+          });
+          setVariants(
+            product.variants.map((v) => ({
+              attributes: v.attributes || { size: v.size, color: v.color },
+              stock: v.stock,
+              sku: v.sku,
+            })),
+          );
+          if (product.images?.[0]) {
+            setImagePreview(getImageUrl(product.images[0]));
+          }
+        }
+      } catch (err) {
+        setError("Failed to load product");
       } finally {
         setFetchLoading(false);
       }
@@ -113,6 +115,20 @@ export default function ProductForm({ productId }) {
     }
   };
 
+  // Update attribute value for a variant
+  const handleVariantAttributeChange = (variantIndex, attrName, value) => {
+    setVariants((prev) =>
+      prev.map((variant, i) =>
+        i === variantIndex
+          ? {
+              ...variant,
+              attributes: { ...variant.attributes, [attrName]: value },
+            }
+          : variant,
+      ),
+    );
+  };
+
   const handleVariantChange = (index, field, value) => {
     setVariants((prev) =>
       prev.map((variant, i) =>
@@ -122,7 +138,7 @@ export default function ProductForm({ productId }) {
   };
 
   const addVariant = () => {
-    setVariants((prev) => [...prev, { ...DEFAULT_VARIANT }]);
+    setVariants((prev) => [...prev, { ...DEFAULT_VARIANT, attributes: {} }]);
   };
 
   const removeVariant = (index) => {
@@ -132,28 +148,45 @@ export default function ProductForm({ productId }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+
+    if (variants.length === 0) {
+      setError("Add at least one variant");
+      return;
+    }
+
+    // Build FormData — needed for image upload
+    const formData = new FormData();
+    formData.append("name", form.name);
+    formData.append("category", form.category);
+    formData.append("brand", form.brand);
+    formData.append("price", form.price);
+    formData.append("discountPrice", form.discountPrice || 0);
+    formData.append("description", form.description);
+    formData.append("isFeatured", form.isFeatured);
+    formData.append("variants", JSON.stringify(variants));
+    if (image) formData.append("image", image);
+
     setLoading(true);
     try {
-      // Will connect to backend later
       if (isEditing) {
-        console.log("Updating product:", productId, form, variants);
+        await updateProduct(productId, formData);
       } else {
-        console.log("Creating product:", form, variants);
+        await createProduct(formData);
       }
       router.push("/dashboard/products");
-    } catch (error) {
-      console.error("Failed to save product:", error);
+    } catch (err) {
+      setError(err.message);
     } finally {
       setLoading(false);
     }
   };
 
-  // Show loading while fetching existing product
   if (fetchLoading) {
     return (
       <div className="admin-loading">
         <i className="fa-solid fa-spinner fa-spin"></i>
-        <span>Loading product...</span>
+        <span>Loading...</span>
       </div>
     );
   }
@@ -166,6 +199,9 @@ export default function ProductForm({ productId }) {
           {/* Basic Info */}
           <div className="admin-form-card">
             <h6 className="admin-form-card-title">Basic Information</h6>
+
+            {error && <div className="alert alert-danger mb-3">{error}</div>}
+
             <div className="row g-3">
               <div className="col-md-12">
                 <label className="admin-label">Product Name*</label>
@@ -202,9 +238,9 @@ export default function ProductForm({ productId }) {
                   required
                 >
                   <option value="">Select category</option>
-                  {CATEGORIES.map((cat) => (
-                    <option key={cat} value={cat}>
-                      {cat}
+                  {categories.map((cat) => (
+                    <option key={cat._id} value={cat._id}>
+                      {cat.name}
                     </option>
                   ))}
                 </select>
@@ -269,12 +305,10 @@ export default function ProductForm({ productId }) {
             </div>
           </div>
 
-          {/* Variants */}
+          {/* Variants with Attributes */}
           <div className="admin-form-card mt-4">
             <div className="d-flex justify-content-between align-items-center mb-3">
-              <h6 className="admin-form-card-title mb-0">
-                Variants (Size / Color / Stock)
-              </h6>
+              <h6 className="admin-form-card-title mb-0">Variants</h6>
               <button
                 type="button"
                 className="admin-add-btn"
@@ -285,72 +319,100 @@ export default function ProductForm({ productId }) {
               </button>
             </div>
 
-            <div className="admin-variant-header">
-              <span>Size</span>
-              <span>Color</span>
-              <span>Stock</span>
-              <span>SKU</span>
-              <span></span>
-            </div>
-
-            {variants.map((variant, index) => (
-              <div key={index} className="admin-variant-row">
-                <select
-                  className="admin-input"
-                  value={variant.size}
-                  onChange={(e) =>
-                    handleVariantChange(index, "size", e.target.value)
-                  }
-                >
-                  <option value="">Size</option>
-                  {SIZES.map((s) => (
-                    <option key={s} value={s}>
-                      {s}
-                    </option>
-                  ))}
-                </select>
-
-                <input
-                  type="text"
-                  className="admin-input"
-                  placeholder="Color (optional)"
-                  value={variant.color}
-                  onChange={(e) =>
-                    handleVariantChange(index, "color", e.target.value)
-                  }
-                />
-
-                <input
-                  type="number"
-                  className="admin-input"
-                  placeholder="Stock"
-                  min="0"
-                  value={variant.stock}
-                  onChange={(e) =>
-                    handleVariantChange(index, "stock", e.target.value)
-                  }
-                />
-
-                <input
-                  type="text"
-                  className="admin-input"
-                  placeholder="SKU"
-                  value={variant.sku}
-                  onChange={(e) =>
-                    handleVariantChange(index, "sku", e.target.value)
-                  }
-                />
-
-                <button
-                  type="button"
-                  className="admin-btn-delete"
-                  onClick={() => removeVariant(index)}
-                  disabled={variants.length === 1}
-                >
-                  <i className="fa-solid fa-trash"></i>
-                </button>
+            {attributes.length === 0 ? (
+              <div className="alert alert-warning">
+                <i className="fa-solid fa-triangle-exclamation me-2"></i>
+                No attributes found.{" "}
+                <Link href="/dashboard/attributes/add">
+                  Add attributes first
+                </Link>{" "}
+                (e.g. Size, Color)
               </div>
-            ))}
+            ) : (
+              <>
+                {/* Variant Header */}
+                <div
+                  className="admin-variant-header"
+                  style={{
+                    gridTemplateColumns: `repeat(${attributes.length}, 1fr) 1fr 1fr 40px`,
+                  }}
+                >
+                  {attributes.map((attr) => (
+                    <span key={attr._id}>{attr.name}</span>
+                  ))}
+                  <span>Stock</span>
+                  <span>SKU</span>
+                  <span></span>
+                </div>
+
+                {/* Variant Rows */}
+                {variants.map((variant, index) => (
+                  <div
+                    key={index}
+                    className="admin-variant-row"
+                    style={{
+                      gridTemplateColumns: `repeat(${attributes.length}, 1fr) 1fr 1fr 40px`,
+                    }}
+                  >
+                    {/* Attribute dropdowns */}
+                    {attributes.map((attr) => (
+                      <select
+                        key={attr._id}
+                        className="admin-input"
+                        value={variant.attributes?.[attr.name] || ""}
+                        onChange={(e) =>
+                          handleVariantAttributeChange(
+                            index,
+                            attr.name,
+                            e.target.value,
+                          )
+                        }
+                      >
+                        <option value="">{attr.name}</option>
+                        {attr.values.map((val) => (
+                          <option key={val} value={val}>
+                            {val}
+                          </option>
+                        ))}
+                      </select>
+                    ))}
+
+                    {/* Stock */}
+                    <input
+                      type="number"
+                      className="admin-input"
+                      placeholder="Stock"
+                      min="0"
+                      value={variant.stock}
+                      onChange={(e) =>
+                        handleVariantChange(index, "stock", e.target.value)
+                      }
+                    />
+
+                    {/* SKU */}
+                    <input
+                      type="text"
+                      className="admin-input"
+                      placeholder="SKU"
+                      value={variant.sku}
+                      onChange={(e) =>
+                        handleVariantChange(index, "sku", e.target.value)
+                      }
+                    />
+
+                    {/* Remove */}
+                    <button
+                      type="button"
+                      className="admin-btn-delete"
+                      onClick={() => removeVariant(index)}
+                      disabled={variants.length === 1}
+                    >
+                      <i className="fa-solid fa-trash"></i>
+                    </button>
+                  </div>
+                ))}
+              </>
+            )}
           </div>
         </div>
 
@@ -405,7 +467,7 @@ export default function ProductForm({ productId }) {
             </label>
           </div>
 
-          {/* Action Buttons */}
+          {/* Actions */}
           <div className="admin-form-card mt-4">
             <button
               type="submit"

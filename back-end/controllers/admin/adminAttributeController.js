@@ -1,7 +1,6 @@
-// @desc   Get all attributes
-
 import Attribute from "../../models/Attribute.js";
 
+// @desc   Get all attributes
 // @route  GET /api/admin/attributes
 export const getAttributes = async (req, res) => {
   try {

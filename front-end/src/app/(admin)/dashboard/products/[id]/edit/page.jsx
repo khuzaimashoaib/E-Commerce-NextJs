@@ -1,4 +1,4 @@
-import ProductForm from "@/components/admin/products/ProductsForm";
+import ProductForm from "@/components/admin/products/ProductForm";
 import AdminPageHeader from "@/components/admin/ui/AdminPageHeader";
 
 export default async function EditProductPage({ params }) {

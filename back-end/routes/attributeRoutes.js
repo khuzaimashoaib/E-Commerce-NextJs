@@ -1,5 +1,5 @@
 import express from "express";
-import Attribute from "../models/Attributes";
+import Attribute from "../models/Attribute.js";
 
 const router = express.Router();
 

@@ -8,6 +8,7 @@ import connectDB from "./config/db.js";
 import productRoutes from "./routes/productRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
+import attributeRoutes from "./routes/attributeRoutes.js";
 import adminProductRoutes from "./routes/admin/adminProductRoutes.js";
 import adminCategoryRoutes from "./routes/admin/adminCategoryRoutes.js";
 import adminUserRoutes from "./routes/admin/adminUserRoutes.js";
@@ -44,6 +45,8 @@ app.get("/", (req, res) => {
 app.use("/api/products", productRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/attributes", attributeRoutes);
+
 app.use("/api/admin/products", adminProductRoutes);
 app.use("/api/admin/categories", adminCategoryRoutes);
 app.use("/api/admin/users", adminUserRoutes);
