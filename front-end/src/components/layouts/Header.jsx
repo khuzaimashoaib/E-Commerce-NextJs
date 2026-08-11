@@ -82,6 +82,23 @@ export default function Header() {
                     </li>
                   ) : user ? (
                     <>
+                      {user.role === "admin" && (
+                        <li>
+                          <Link
+                            href="/dashboard"
+                            style={{
+                              fontSize: "13px",
+                              fontWeight: "500",
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "5px",
+                            }}
+                          >
+                            <i className="fa-external-link fa-solid"></i>
+                            Dashboard
+                          </Link>
+                        </li>
+                      )}
                       <li>
                         <span className="header-username">
                           Hi, {user.name.split(" ")[0]}

@@ -13,8 +13,8 @@
 }
 .theme-btn {
   width: 100%;
-  background-color: var(--header);
-  color: var(--white);
+  background-color: black !important;
+  color: var(--white) !important;
 }
 .checkout-main-item .checkout-right .order-list-box .order-item .item-img img {
   width: 81px;
@@ -485,6 +485,7 @@
 
 .admin-input:focus {
   border-color: var(--color-primary, #1a1a2e);
+  color: black;
 }
 
 .admin-btn-save {
@@ -842,4 +843,8 @@
   justify-content: center;
   color: #ccc;
   font-size: 18px;
+}
+.categorie-wrapper .categorie-right-image img {
+  width: 300px;
+  height: 300px;
 }

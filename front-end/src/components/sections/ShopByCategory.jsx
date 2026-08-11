@@ -1,95 +1,57 @@
-import React from 'react'
+import Link from "next/link";
+import { getCategories } from "@/lib/api";
+import { getImageUrl } from "@/lib/utils/imageUtils";
 
-const ShopByCategory = () => {
+export default async function ShopByCategory() {
+  const categories = await getCategories();
+
   return (
     <section className="shop-category-section fix section-padding">
       <div className="container">
         <div className="section-title text-center">
           <span className="sub-title">Browse Our Collection</span>
-          <h2 className="wow fadeInUp" data-wow-delay=".3s">Shop by Category</h2>
+          <h2 className="wow fadeInUp" data-wow-delay=".3s">
+            Shop by Category
+          </h2>
           <p className="mt-3 wow fadeInUp" data-wow-delay=".5s">
-            This title combines a strong call to action with the essence of
+            Find everything you need for the beautiful game —
             <br />
-            formal elegance, making it clear to visitors
+            from boots to jerseys, gloves to footballs.
           </p>
         </div>
+
         <div className="categorie-wrapper wow fadeInUp" data-wow-delay=".3s">
           <div className="swiper shop-category-slider-4">
             <div className="swiper-wrapper">
-              <div className="swiper-slide">
-                <div className="categorie-right-image style-2">
-                  <img
-                    className="font-image"
-                    src="assets/img/home-4/category-right1.jpg"
-                    alt=""
-                  />
-                  <img
-                    className="back-image"
-                    src="assets/img/home-4/category-right4.jpg"
-                    alt=""
-                  />
-                  <h3 className="title">
-                    <a href="shop-details.html">
-                      Bracelets <span>(08)</span>
-                    </a>
-                  </h3>
+              {categories.map((category) => (
+                <div key={category._id} className="swiper-slide">
+                  <div className="categorie-right-image style-2">
+                    {/* Front image */}
+                    <img
+                      className="font-image"
+                      src={getImageUrl(category.image)}
+                      alt={category.name}
+                    />
+
+                    {/* Back image — use same image if no second image */}
+                    <img
+                      className="back-image"
+                      src={getImageUrl(category.image)}
+                      alt={category.name}
+                    />
+
+                    <h3 className="title">
+                      <Link href={`/shop?category=${category.slug}`}>
+                        {category.name}
+                      </Link>
+                    </h3>
+                  </div>
                 </div>
-              </div>
-              <div className="swiper-slide">
-                <div className="categorie-right-image style-2">
-                  <img
-                    className="font-image"
-                    src="assets/img/home-4/category-right2.jpg"
-                    alt=""
-                  />
-                  <img
-                    className="back-image"
-                    src="assets/img/home-4/category-right3.jpg"
-                    alt=""
-                  />
-                  <h3 className="title">
-                    <a href="shop-details.html"> Earring <span>(08)</span> </a>
-                  </h3>
-                </div>
-              </div>
-              <div className="swiper-slide">
-                <div className="categorie-right-image style-2">
-                  <img
-                    className="font-image"
-                    src="assets/img/home-4/category-right3.jpg"
-                    alt=""
-                  />
-                  <img
-                    className="back-image"
-                    src="assets/img/home-4/category-right2.jpg"
-                    alt=""
-                  />
-                  <h3 className="title">
-                    <a href="shop-details.html">
-                      Necklaces <span>(08)</span>
-                    </a>
-                  </h3>
-                </div>
-              </div>
-              <div className="swiper-slide">
-                <div className="categorie-right-image style-2">
-                  <img
-                    className="font-image"
-                    src="assets/img/home-4/category-right4.jpg"
-                    alt=""
-                  />
-                  <img
-                    className="back-image"
-                    src="assets/img/home-4/category-right1.jpg"
-                    alt=""
-                  />
-                  <h3 className="title">
-                    <a href="shop-details.html"> Rings <span>(08)</span> </a>
-                  </h3>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
+
+          {/* Slider Navigation */}
           <div className="array-button">
             <button className="array-prev">
               <i className="fa-solid fa-chevron-left"></i>
@@ -101,7 +63,5 @@ const ShopByCategory = () => {
         </div>
       </div>
     </section>
-  )
+  );
 }
-
-export default ShopByCategory
