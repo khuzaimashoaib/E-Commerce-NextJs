@@ -1,6 +1,7 @@
 import Breadcrumb from "@/components/sections/Breadcrumb";
 import { getCategories, getProducts } from "@/lib/api";
 import ShopClient from "./ShopClient";
+import { Suspense } from "react";
 
 export default async function ShopPage() {
   // Fetch initial data on the server
@@ -19,7 +20,9 @@ export default async function ShopPage() {
           { label: "Shop" },
         ]}
       />
-      <ShopClient initialProducts={products} initialCategories={categories} />
+      <Suspense fallback={<p className="text-center py-5">Loading...</p>}>
+        <ShopClient initialProducts={products} initialCategories={categories} />
+      </Suspense>
     </>
   );
 }

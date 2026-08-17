@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { getProducts, getCategories } from "@/lib/api";
+import { useSearchParams } from "next/navigation";
 
 const DEFAULT_FILTERS = {
   categories: [],
@@ -11,17 +12,24 @@ const DEFAULT_FILTERS = {
   availability: { inStock: true, outOfStock: false },
 };
 
-import React from "react";
+const useShopFilters = (initialProducts = []) => {
+  const searchParams = useSearchParams();
+  const categoryParam = searchParams.get("category");
 
-const useShopFilters = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [pendingFilters, setPendingFilters] = useState(DEFAULT_FILTERS);
-  const [appliedFilters, setAppliedFilters] = useState(DEFAULT_FILTERS);
+
+  const [pendingFilters, setPendingFilters] = useState({
+    ...DEFAULT_FILTERS,
+    categories: categoryParam ? [categoryParam] : [],
+  });
+
+  const [appliedFilters, setAppliedFilters] = useState({
+    ...DEFAULT_FILTERS,
+    categories: categoryParam ? [categoryParam] : [], // ← apply immediately
+  });
 
   useEffect(() => {
-    if (appliedFilters === null) return;
-
     const fetchProducts = async () => {
       setLoading(true);
       try {
@@ -36,6 +44,21 @@ const useShopFilters = () => {
 
     fetchProducts();
   }, [appliedFilters]);
+
+  useEffect(() => {
+    if (categoryParam) {
+      const newFilters = {
+        ...DEFAULT_FILTERS,
+        categories: [categoryParam],
+      };
+      setPendingFilters(newFilters);
+      setAppliedFilters(newFilters);
+    } else {
+      // No category param — reset to default
+      setPendingFilters(DEFAULT_FILTERS);
+      setAppliedFilters(DEFAULT_FILTERS);
+    }
+  }, [categoryParam]);
 
   const applyFilters = () => setAppliedFilters({ ...pendingFilters });
 

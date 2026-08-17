@@ -28,6 +28,36 @@ export default function RootLayout({ children }) {
           rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
         />
+        <Script
+          src="/assets/js/bootstrap.bundle.min.js"
+          strategy="afterInteractive"
+        />
+        <Script
+          src="/assets/js/jquery-3.7.1.min.js"
+          strategy="beforeInteractive"
+        />
+        <Script
+          src="/assets/js/jquery.meanmenu.min.js"
+          strategy="beforeInteractive"
+        />
+        <Script
+          src="/assets/js/jquery.magnific-popup.min.js"
+          strategy="beforeInteractive"
+        />
+        <Script
+          src="/assets/js/jquery.counterup.min.js"
+          strategy="beforeInteractive"
+        />
+        <Script
+          src="/assets/js/jquery.nice-select.min.js"
+          strategy="beforeInteractive"
+        />
+        <Script
+          src="/assets/js/swiper-bundle.min.js "
+          strategy="afterInteractive"
+        />
+        <Script src="/assets/js/wow.min.js" strategy="beforeInteractive" />
+        <Script src="/assets/js/main.js" strategy="afterInteractive" />
       </body>
     </html>
   );
