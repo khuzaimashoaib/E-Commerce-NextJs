@@ -31,7 +31,12 @@ export default async function Footer() {
               <div className="single-widget-items">
                 <div className="widget-head">
                   <a href="index.html">
-                    <img src="assets/img/logo/white-logo4.svg" alt="" />
+                    <img
+                      src="assets/front-end-images/logo.png"
+                      alt=""
+                      height={80}
+                      width={150}
+                    />
                   </a>
                 </div>
                 <div className="footer-content">
@@ -139,9 +144,7 @@ export default async function Footer() {
             className="footer-bottom-wrapper wow fadeInUp"
             data-wow-delay=".3s"
           >
-            <p>
-              Copyright 2026 <a href="index.html">POSH</a>. All Rights Reserved
-            </p>
+            <p>Copyright 2026. All Rights Reserved</p>
             <img src="/assets/front-end-images/bank.png" alt="" />
           </div>
         </div>

@@ -51,10 +51,10 @@ export default function AdminSidebar() {
       <div className="admin-sidebar-logo">
         <Link href="/dashboard">
           <Image
-            src="/assets/img/logo/logo-4.svg"
+            src="/assets/front-end-images/logo.png"
             alt="logo"
-            width={130}
-            height={45}
+            width={100}
+            height={50}
           />
         </Link>
       </div>

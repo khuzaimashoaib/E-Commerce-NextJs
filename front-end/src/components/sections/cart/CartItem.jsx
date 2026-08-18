@@ -1,6 +1,7 @@
 "use client";
 
 import { useCartContext } from "@/lib/context/CartContext";
+import { getImageUrl } from "@/lib/utils/imageUtils";
 
 export default function CartItem({ item }) {
   const { removeFromCart, updateQuantity } = useCartContext();
@@ -10,17 +11,15 @@ export default function CartItem({ item }) {
       {/* Product Info */}
       <div className="product-info">
         <div className="product-img">
-          <img
-            src={item.image || "/assets/front-end-images/placeholder.jpg"}
-            alt={item.name}
-          />
+          <img src={getImageUrl(item.image)} alt={item.name} />
         </div>
         <div className="product-details">
           <p className="category">{item.category?.toUpperCase()}</p>
           <h2 className="name">{item.name}</h2>
           <p className="price">${item.price.toFixed(2)}</p>
-          <small>Size: {item.size}</small>
-          {item.color && <small className="ms-2">Color: {item.color}</small>}
+          {item.attributeLabel && (
+            <small className="text-muted">{item.attributeLabel}</small>
+          )}
         </div>
       </div>
 

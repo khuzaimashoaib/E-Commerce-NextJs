@@ -1,16 +1,9 @@
 export function addToCart(cartItems, product, variant, quantity = 1) {
-  const ExistingCartItem = cartItems.find(
-    (items) =>
-      items.productId === product._id &&
-      items.size === variant.size &&
-      items.color === variant.color,
-  );
+  const existingItem = cartItems.find((item) => item.sku === variant.sku);
 
-  if (ExistingCartItem) {
+  if (existingItem) {
     return cartItems.map((item) =>
-      item.productId === product._id &&
-      item.size === variant.size &&
-      item.color === variant.color
+      item.sku === variant.sku
         ? {
             ...item,
             quantity: Math.min(item.quantity + quantity, variant.stock),
@@ -18,6 +11,12 @@ export function addToCart(cartItems, product, variant, quantity = 1) {
         : item,
     );
   }
+  const attributeLabel = variant.attributes
+    ? Object.entries(variant.attributes)
+        .map(([k, v]) => `${k}: ${v}`)
+        .join(", ")
+    : "";
+
   return [
     ...cartItems,
     {
@@ -27,8 +26,8 @@ export function addToCart(cartItems, product, variant, quantity = 1) {
       image: product.images?.[0] || "",
       price: product.discountPrice > 0 ? product.discountPrice : product.price,
       originalPrice: product.price,
-      size: variant.size,
-      color: variant.color || null,
+      attributes: variant.attributes || {}, // ← store attributes object
+      attributeLabel, // ← "Size: M, Color: Red"
       stock: variant.stock,
       sku: variant.sku,
       quantity,

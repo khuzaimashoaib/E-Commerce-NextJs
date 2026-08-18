@@ -2,6 +2,7 @@
 
 import { useCartContext } from "@/lib/context/CartContext";
 import { getShipping, getCartTotal } from "@/lib/utils/cartUtils";
+import { getImageUrl } from "@/lib/utils/imageUtils";
 
 export default function CheckoutOrderSummary() {
   const { cartItems, subtotal, updateQuantity, removeFromCart } =
@@ -26,10 +27,7 @@ export default function CheckoutOrderSummary() {
           {cartItems.map((item) => (
             <div key={item.sku} className="order-item">
               <div className="item-img">
-                <img
-                  src={item.image || "/assets/front-end-images/placeholder.jpg"}
-                  alt={item.name}
-                />
+                <img src={getImageUrl(item.image)} alt={item.name} />
               </div>
 
               <div className="item-info">

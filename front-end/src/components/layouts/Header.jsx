@@ -38,18 +38,18 @@ export default function Header() {
                 <div className="logo">
                   <Link href="/" className="header-logo">
                     <Image
-                      src="/assets/img/logo/logo-4.svg"
+                      src="/assets/front-end-images/logo.png"
                       alt="logo"
                       width={150}
-                      height={50}
+                      height={80}
                     />
                   </Link>
                   <Link href="/" className="header-logo-2">
                     <Image
-                      src="/assets/img/logo/logo-4.svg"
+                      src="/assets/front-end-images/logo.png"
                       alt="logo"
                       width={150}
-                      height={50}
+                      height={80}
                     />
                   </Link>
                 </div>

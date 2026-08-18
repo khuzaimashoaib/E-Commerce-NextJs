@@ -1,26 +1,41 @@
 "use client";
 
 import { useCartContext } from "@/lib/context/CartContext";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function ProductVariants({ variants, product }) {
   const { addToCart } = useCartContext();
+  const router = useRouter();
 
-  const sizes = [...new Set(variants.map((v) => v.size))];
-  const colors = [...new Set(variants.map((v) => v.color).filter(Boolean))];
-  const hasColors = colors.length > 0;
+  const attributeKeys =
+    variants.length > 0 && variants[0].attributes
+      ? Object.keys(variants[0].attributes)
+      : [];
 
-  const [selectedSize, setSelectedSize] = useState(null);
-  const [selectedColor, setSelectedColor] = useState(null);
+  // Get unique values per attribute key
+  const getAttributeValues = (attrName) => {
+    return [
+      ...new Set(variants.map((v) => v.attributes?.[attrName]).filter(Boolean)),
+    ];
+  };
+  const [selectedAttributes, setSelectedAttributes] = useState({});
   const [quantity, setQuantity] = useState(1);
+  const [addedMsg, setAddedMsg] = useState("");
 
-  const selectedVariant = variants.find(
-    (v) =>
-      v.size === selectedSize &&
-      (colors.length === 0 || v.color === selectedColor),
+  const selectedVariant = variants.find((v) =>
+    Object.entries(selectedAttributes).every(
+      ([key, val]) => v.attributes?.[key] === val,
+    ),
   );
+  const allSelected = attributeKeys.every((key) => selectedAttributes[key]);
   const inStock = selectedVariant ? selectedVariant.stock > 0 : false;
   const stockLeft = selectedVariant?.stock || 0;
+
+  const handleAttributeSelect = (attrName, value) => {
+    setSelectedAttributes((prev) => ({ ...prev, [attrName]: value }));
+    setQuantity(1);
+  };
 
   const handleQuantityChange = (type) => {
     if (type === "increment" && quantity < stockLeft) {
@@ -32,80 +47,62 @@ export default function ProductVariants({ variants, product }) {
   };
 
   const handleAddToCart = () => {
-    if (!selectedSize) return alert("Please select a size first");
-    if (hasColors && !selectedColor) return alert("Please select a color");
-
-    // ← calls context which updates shared cart state + localStorage
+    if (!allSelected) {
+      alert("Please select all options first");
+      return;
+    }
+    if (!inStock) {
+      alert("This variant is out of stock");
+      return;
+    }
     addToCart(product, selectedVariant, quantity);
-
-    alert(`${product.name} (${selectedSize}) added to cart!`);
+    setAddedMsg("Added to cart!");
+    setTimeout(() => setAddedMsg(""), 3000);
   };
 
+  const handleBuyNow = () => {
+    if (!allSelected || !inStock) return;
+    addToCart(product, selectedVariant, quantity);
+    router.push("/cart");
+  };
   return (
     <div className="gt-shop-details-content">
-      {/* Size Picker */}
-      {sizes.length > 0 && (
-        <div className="d-flex align-items-baseline gap-2">
-          <span>Size:</span>
-          <ul className="color-list mb-3 ">
-            {sizes.map((size) => {
-              const variant = variants.find((v) => v.size === size);
-              const outOfStock = variant?.stock === 0;
-              return (
-                <li key={size}>
-                  <button
-                    className={`size-btn ${selectedSize === size ? "active" : ""} ${outOfStock ? "disabled" : ""}`}
-                    onClick={() => !outOfStock && setSelectedSize(size)}
-                    disabled={outOfStock}
-                    title={outOfStock ? "Out of stock" : size}
-                  >
-                    {size}
-                  </button>
-                </li>
-              );
-            })}
+      {/* Attribute Selectors */}
+      {attributeKeys.map((attrName) => (
+        <div key={attrName} className="d-flex align-items-baseline gap-2 mb-3">
+          <span>{attrName}:</span>
+          <ul className="color-list mb-0">
+            {getAttributeValues(attrName).map((value) => (
+              <li key={value}>
+                <button
+                  className={`size-btn ${
+                    selectedAttributes[attrName] === value ? "active" : ""
+                  }`}
+                  onClick={() => handleAttributeSelect(attrName, value)}
+                >
+                  {value}
+                </button>
+              </li>
+            ))}
           </ul>
         </div>
-      )}
-      {colors.length > 0 && (
-        <div className="d-flex align-items-center gap-2">
-          <span>Color:</span>
-          <ul className="color-list mb-3">
-            {colors.map((color) => {
-              const variant = variants.find((v) => v.color === color);
-              const outOfStock = variant?.stock === 0;
-              return (
-                <li key={color}>
-                  <button
-                    className={`color-btn ${selectedColor === color ? "active" : ""} ${outOfStock ? "disabled" : ""}`}
-                    onClick={() => !outOfStock && setSelectedColor(color)}
-                    disabled={outOfStock}
-                    title={outOfStock ? "Out of stock" : color}
-                    style={{
-                      backgroundColor: color.toLowerCase(),
-                      width: "28px",
-                      height: "28px",
-                      borderRadius: "50%",
-                      border:
-                        selectedColor === color
-                          ? "3px solid #000"
-                          : "2px solid #ddd",
-                    }}
-                  />
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-      )}
+      ))}
 
       {/* Stock Status */}
-      {selectedSize && (
-        <p className={inStock ? "text-success" : "text-danger"}>
+      {allSelected && (
+        <p className={`mb-3 ${inStock ? "text-success" : "text-danger"}`}>
           {inStock
             ? `Hurry! Only ${stockLeft} units left in stock!`
             : "Out of Stock"}
         </p>
+      )}
+
+      {/* Success Message */}
+      {addedMsg && (
+        <div className="alert alert-success py-2 mb-3">
+          <i className="fa-solid fa-check me-2"></i>
+          {addedMsg}
+        </div>
       )}
 
       {/* Quantity + Add to Cart */}
@@ -135,7 +132,7 @@ export default function ProductVariants({ variants, product }) {
         <button
           className="shop-btn theme-btn"
           onClick={handleAddToCart}
-          disabled={!selectedSize || !inStock}
+          disabled={!allSelected || !inStock}
         >
           Add to Cart
         </button>
@@ -151,12 +148,14 @@ export default function ProductVariants({ variants, product }) {
       <button
         type="button"
         className="buy-btn mt-3"
-        disabled={!selectedSize || !inStock}
-        onClick={handleAddToCart}
+        disabled={!allSelected || !inStock}
+        onClick={handleBuyNow}
       >
         Buy It Now
       </button>
-      <div className="gt-bank-list">
+
+      {/* Safe Checkout */}
+      <div className="gt-bank-list mt-3">
         <div>
           Guaranteed <span>Safe &amp; Secure Checkout</span>
         </div>

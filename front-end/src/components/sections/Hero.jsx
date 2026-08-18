@@ -1,3 +1,4 @@
+import Link from "next/link";
 import React from "react";
 
 const Hero = () => {
@@ -9,7 +10,7 @@ const Hero = () => {
             <div
               className="hero-4 bg-cover"
               style={{
-                backgroundColor: "#a0c8f7",
+                backgroundColor: "#96fc80",
               }}
             >
               <div className="container">
@@ -24,9 +25,9 @@ const Hero = () => {
                       <p>Discover Exquisite Pieces for Every Occasion.</p>
                     </div>
                     <div className="hero-button">
-                      <a href="shop.html" className="theme-btn">
+                      <Link href="/shop" className="theme-btn">
                         Explore More
-                      </a>
+                      </Link>
                     </div>
                   </div>
                   <div className="col-lg-6">
@@ -35,7 +36,7 @@ const Hero = () => {
                       <div className="icon-box ">
                         <div className="icon">
                           <img
-                            src="assets/front-end-images/hero-s-img.png"
+                            src="assets/front-end-images/football-icon.png"
                             alt=""
                           />
                         </div>

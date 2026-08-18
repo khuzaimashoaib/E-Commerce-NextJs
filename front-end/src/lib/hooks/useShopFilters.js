@@ -6,7 +6,7 @@ import { useSearchParams } from "next/navigation";
 
 const DEFAULT_FILTERS = {
   categories: [],
-  sizes: [],
+  attributes: {},
   rating: null,
   priceRange: { min: 0, max: 1000 },
   availability: { inStock: true, outOfStock: false },

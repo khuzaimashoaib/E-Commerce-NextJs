@@ -5,8 +5,7 @@ export async function getProducts(filters = {}) {
 
   if (filters.categories?.length)
     params.append("category", filters.categories.join(","));
-  if (filters.sizes?.length) params.append("size", filters.sizes.join(","));
-  if (filters.rating) params.append("rating", filters.rating);
+  // if (filters.rating) params.append("rating", filters.rating);
   if (filters.priceRange?.min !== undefined)
     params.append("minPrice", filters.priceRange.min);
   if (filters.priceRange?.max !== undefined)
@@ -15,6 +14,13 @@ export async function getProducts(filters = {}) {
     params.append("inStock", "true");
   if (filters.availability?.outOfStock && !filters.availability?.inStock)
     params.append("inStock", "false");
+  if (filters.attributes && Object.keys(filters.attributes).length > 0) {
+    const attrString = Object.entries(filters.attributes)
+      .filter(([_, values]) => values.length > 0) // skip empty
+      .map(([name, values]) => `${name}:${values.join(",")}`)
+      .join("|");
+    if (attrString) params.append("attributes", attrString);
+  }
 
   const queryString = params.toString();
   const url = `${API_URL}/products${queryString ? `?${queryString}` : ""}`;

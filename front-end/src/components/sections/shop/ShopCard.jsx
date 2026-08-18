@@ -1,6 +1,5 @@
 import { getImageUrl } from "@/lib/utils/imageUtils";
 import Link from "next/link";
-import React from "react";
 
 const ShopCard = ({ product }) => {
   const { name, slug, images, category, price, discountPrice, variants } =
@@ -34,7 +33,7 @@ const ShopCard = ({ product }) => {
           <span className="discount-text">{discountPercent}</span>
         )}
 
-        <Link href={`#`} className="theme-btn">
+        <Link href={`/shop/${slug}`} className="theme-btn">
           <i className="fa-regular fa-basket-shopping"></i> Add to Cart
         </Link>
 
@@ -50,9 +49,9 @@ const ShopCard = ({ product }) => {
             </a>
           </li>
           <li>
-            <button data-bs-toggle="modal" data-bs-target="#exampleModal2">
+            <Link href={`/shop/${slug}`}>
               <i className="far fa-eye"></i>
-            </button>
+            </Link>
           </li>
         </ul>
       </div>

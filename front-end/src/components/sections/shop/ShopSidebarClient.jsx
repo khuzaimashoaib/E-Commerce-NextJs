@@ -1,13 +1,13 @@
 "use client";
 
+import AttributeFilter from "./filters/AttributeFilter";
 import AvailabilityFilter from "./filters/AvailaibilityFilter";
 import CategoryFilter from "./filters/CategoryFilter";
 import PriceFilter from "./filters/PrizeFilter";
-import RatingFilter from "./filters/RatingFilter";
-import SizeFilter from "./filters/SizeFilter";
 
 export default function ShopSidebarClient({
   categories,
+  attributes,
   filters,
   setFilters,
   onApply,
@@ -22,14 +22,22 @@ export default function ShopSidebarClient({
     }));
   };
 
-  const toggleSize = (size) => {
-    setFilters((prev) => ({
-      ...prev,
-      sizes: prev.sizes.includes(size)
-        ? prev.sizes.filter((s) => s !== size)
-        : [...prev.sizes, size],
-    }));
+  const toggleAttribute = (attrName, value) => {
+    setFilters((prev) => {
+      const current = prev.attributes?.[attrName] || [];
+      const updated = current.includes(value)
+        ? current.filter((v) => v !== value)
+        : [...current, value];
+      return {
+        ...prev,
+        attributes: {
+          ...prev.attributes,
+          [attrName]: updated,
+        },
+      };
+    });
   };
+
   const toggleAvailability = (key) => {
     setFilters((prev) => ({
       ...prev,
@@ -44,10 +52,6 @@ export default function ShopSidebarClient({
     setFilters((prev) => ({ ...prev, priceRange: newRange }));
   };
 
-  const handleRatingChange = (rating) => {
-    setFilters((prev) => ({ ...prev, rating }));
-  };
-
   return (
     <div className="shop-sidebar-area">
       {/* Category Filter */}
@@ -56,26 +60,25 @@ export default function ShopSidebarClient({
         selectedCategories={filters.categories}
         onChange={toggleCategory}
       />
+      {attributes.map((attribute) => (
+        <AttributeFilter
+          key={attribute._id}
+          attribute={attribute}
+          selectedValues={filters.attributes?.[attribute.name] || []}
+          onChange={toggleAttribute}
+        />
+      ))}
 
+      <PriceFilter
+        priceRange={filters.priceRange}
+        onChange={handlePriceChange}
+      />
       {/* Availability Filter */}
       <AvailabilityFilter
         availability={filters.availability}
         onChange={toggleAvailability}
       />
 
-      {/* Size Filter */}
-      <SizeFilter selectedSizes={filters.sizes} onChange={toggleSize} />
-
-      {/* Price Filter */}
-      <PriceFilter
-        priceRange={filters.priceRange}
-        onChange={handlePriceChange}
-      />
-
-      <RatingFilter
-        selectedRating={filters.rating}
-        onChange={handleRatingChange}
-      />
       <div className="shop-sidebar-widget">
         <button
           className="theme-btn w-100 mb-2"

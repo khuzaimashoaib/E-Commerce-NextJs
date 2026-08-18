@@ -6,7 +6,11 @@ import ShopSidebarClient from "@/components/sections/shop/ShopSidebarClient";
 
 import useShopFilters from "@/lib/hooks/useShopFilters";
 
-export default function ShopClient({ initialProducts, initialCategories }) {
+export default function ShopClient({
+  initialProducts,
+  initialCategories,
+  initialAttributes,
+}) {
   const {
     products,
     loading,
@@ -24,6 +28,7 @@ export default function ShopClient({ initialProducts, initialCategories }) {
           <div className="col-lg-3">
             <ShopSidebarClient
               categories={initialCategories}
+              attributes={initialAttributes}
               filters={pendingFilters}
               setFilters={setPendingFilters}
               onApply={applyFilters}

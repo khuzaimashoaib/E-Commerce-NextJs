@@ -5,7 +5,8 @@ import Category from "../models/Category.js";
 // @route   GET /api/products
 export const getProducts = async (req, res) => {
   try {
-    const { category, minPrice, maxPrice, size, rating, inStock } = req.query;
+    const { category, minPrice, maxPrice, rating, inStock, attributes } =
+      req.query;
     const filter = {};
     // Category filter — find category by slug first, then use its _id
 
@@ -22,16 +23,20 @@ export const getProducts = async (req, res) => {
       if (minPrice) filter.price.$gte = Number(minPrice);
       if (maxPrice) filter.price.$lte = Number(maxPrice);
     }
-    // Size filter — check inside variants array
-    if (size) {
-      const sizes = size.split(","); // support multiple: ?size=M,L
-      filter["variants.size"] = { $in: sizes };
+    if (attributes) {
+      const attrFilters = attributes.split("|"); // ["Size:M,L", "Color:Red"]
+      attrFilters.forEach((attrFilter) => {
+        const [attrName, valuesStr] = attrFilter.split(":");
+        const values = valuesStr.split(",");
+        // Filter variants where attribute matches
+        filter[`variants.attributes.${attrName}`] = { $in: values };
+      });
     }
 
     // Rating filter
-    if (rating) {
-      filter.rating = { $gte: Number(rating) };
-    }
+    // if (rating) {
+    //   filter.rating = { $gte: Number(rating) };
+    // }
 
     // Availability filter
     if (inStock === "true") {

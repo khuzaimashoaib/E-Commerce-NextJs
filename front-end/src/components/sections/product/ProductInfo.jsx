@@ -1,10 +1,18 @@
 export default function ProductInfo({ product }) {
-  const { name, price, discountPrice, category, brand, rating, numReviews } =
-    product;
+  const {
+    name,
+    price,
+    discountPrice,
+    description,
+    brand,
+    category,
+    rating,
+    numReviews,
+  } = product;
 
   return (
     <div className="gt-shop-details-content">
-      {/* Category */}
+      {/* Category + Brand */}
       <span>{category?.name}</span>
 
       {/* Name */}
@@ -23,9 +31,9 @@ export default function ProductInfo({ product }) {
         )}
       </ul>
 
-      {/* Viewing */}
+      {/* Views */}
       <span className="eye-icon">
-        <i className="fa-regular fa-eye me-2"></i>
+        <i className="fa-regular fa-eye"></i>
         16 people are viewing this right now
       </span>
 
@@ -41,6 +49,15 @@ export default function ProductInfo({ product }) {
         ))}
         <span>({numReviews}+ Review)</span>
       </div>
+
+      {/* Brand */}
+      {brand && (
+        <ul className="gt-list-items mt-2">
+          <li>
+            <span>Brand:</span> {brand}
+          </li>
+        </ul>
+      )}
 
       {/* Share */}
       <div className="share-list">
