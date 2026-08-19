@@ -129,13 +129,10 @@ export default function CheckoutForm({
             <input
               type="text"
               name="postalCode"
-              placeholder="Postal Code*"
+              placeholder="Postal Code"
               value={form.postalCode}
               onChange={onChange}
             />
-            {errors.postalCode && (
-              <small className="text-danger">{errors.postalCode}</small>
-            )}
           </div>
 
           <div className="col-md-12">
@@ -186,6 +183,9 @@ export default function CheckoutForm({
       >
         {loading ? "Placing Order..." : "Place Order"}
       </button>
+      {errors.submit && (
+        <div className="alert alert-danger mt-2">{errors.submit}</div>
+      )}
     </div>
   );
 }

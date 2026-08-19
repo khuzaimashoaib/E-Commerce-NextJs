@@ -11,6 +11,20 @@ export const getAttributes = async (req, res) => {
   }
 };
 
+// @desc   Get single attribute
+// @route  GET /api/admin/attributes/:id
+export const getAttributeById = async (req, res) => {
+  try {
+    const attribute = await Attribute.findById(req.params.id);
+    if (!attribute) {
+      return res.status(404).json({ message: "Attribute not found" });
+    }
+    res.json(attribute);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // @desc   Create attribute
 // @route  POST /api/admin/attributes
 export const createAttribute = async (req, res) => {

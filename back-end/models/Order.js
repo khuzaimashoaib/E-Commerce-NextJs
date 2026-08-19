@@ -5,10 +5,11 @@ const orderItemSchema = new mongoose.Schema({
   name: { type: String, required: true },
   image: { type: String, default: "" },
   price: { type: Number, required: true },
-  size: { type: String, required: true },
-  color: { type: String, default: "" },
-  quantity: { type: Number, required: true },
+  attributes: { type: Object, default: {} }, // ← { Size: "M", Color: "Red" }
+  attributeLabel: { type: String, default: "" }, // ← "Size: M, Color: Red"
+  stock: { type: Number, default: 0 },
   sku: { type: String, required: true },
+  quantity: { type: Number, required: true },
 });
 
 const orderSchema = new mongoose.Schema(

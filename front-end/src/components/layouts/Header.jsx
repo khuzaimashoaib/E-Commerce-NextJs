@@ -38,6 +38,7 @@ export default function Header() {
                 <div className="logo">
                   <Link href="/" className="header-logo">
                     <Image
+                      loading="eager"
                       src="/assets/front-end-images/logo.png"
                       alt="logo"
                       width={150}
@@ -46,6 +47,7 @@ export default function Header() {
                   </Link>
                   <Link href="/" className="header-logo-2">
                     <Image
+                      loading="eager"
                       src="/assets/front-end-images/logo.png"
                       alt="logo"
                       width={150}

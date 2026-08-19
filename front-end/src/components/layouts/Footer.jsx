@@ -32,6 +32,7 @@ export default async function Footer() {
                 <div className="widget-head">
                   <a href="index.html">
                     <img
+                      loading="eager"
                       src="assets/front-end-images/logo.png"
                       alt=""
                       height={80}

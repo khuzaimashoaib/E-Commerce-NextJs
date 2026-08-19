@@ -1,5 +1,5 @@
 "use client";
-import { createAttribute, updateAttribute } from "@/lib/api";
+import { createAttribute, updateAttribute, getAttributeById } from "@/lib/api";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -15,17 +15,15 @@ const AttributeForm = ({ attributeId }) => {
   const [fetchLoading, setFetchLoading] = useState(isEditing);
   const [error, setError] = useState("");
 
+  // Fetch existing attribute when editing
   useEffect(() => {
     if (!isEditing) return;
 
     const fetchAttribute = async () => {
       try {
-        const data = await getAdminAttributes();
-        const attribute = data.find((a) => a._id === attributeId);
-        if (attribute) {
-          setName(attribute.name);
-          setValues(attribute.values);
-        }
+        const attribute = await getAttributeById(attributeId);
+        setName(attribute.name);
+        setValues(attribute.values); // ← pre-fill ALL existing values
       } catch (err) {
         setError("Failed to load attribute");
       } finally {
@@ -35,12 +33,7 @@ const AttributeForm = ({ attributeId }) => {
 
     fetchAttribute();
   }, [attributeId, isEditing]);
-  const handleInputKeyDown = (e) => {
-    if (e.key === "Enter" || e.key === ",") {
-      e.preventDefault();
-      addValue();
-    }
-  };
+
   const addValue = () => {
     const trimmed = inputValue.trim();
     if (!trimmed) return;
@@ -48,8 +41,16 @@ const AttributeForm = ({ attributeId }) => {
       setInputValue("");
       return;
     }
+    // ← spreads existing values + adds new one
     setValues((prev) => [...prev, trimmed]);
     setInputValue("");
+  };
+
+  const handleInputKeyDown = (e) => {
+    if (e.key === "Enter" || e.key === ",") {
+      e.preventDefault();
+      addValue();
+    }
   };
 
   const removeValue = (val) => {
@@ -59,11 +60,20 @@ const AttributeForm = ({ attributeId }) => {
     e.preventDefault();
     setError("");
 
+    // Add any pending input value that wasn't confirmed with Enter
+    let finalValues = [...values];
+    const pendingValue = inputValue.trim();
+    if (pendingValue && !values.includes(pendingValue)) {
+      finalValues = [...values, pendingValue];
+      setValues(finalValues);
+      setInputValue("");
+    }
+
     if (!name.trim()) {
       setError("Attribute name is required");
       return;
     }
-    if (values.length === 0) {
+    if (finalValues.length === 0) {
       setError("Add at least one value");
       return;
     }
@@ -71,9 +81,10 @@ const AttributeForm = ({ attributeId }) => {
     setLoading(true);
     try {
       if (isEditing) {
-        await updateAttribute(attributeId, { name, values });
+        // Sends ALL values — existing + newly added
+        await updateAttribute(attributeId, { name, values: finalValues });
       } else {
-        await createAttribute({ name, values });
+        await createAttribute({ name, values: finalValues });
       }
       router.push("/dashboard/attributes");
     } catch (err) {

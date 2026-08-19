@@ -12,6 +12,14 @@ export async function getAttributes() {
   if (!res.ok) throw new Error("Failed to fetch attributes");
   return res.json();
 }
+export async function getAttributeById(id) {
+  const res = await fetch(`${API_URL}/admin/attributes/${id}`, {
+    ...defaultOptions,
+    cache: "no-store",
+  });
+  if (!res.ok) throw new Error("Failed to fetch attribute");
+  return res.json();
+}
 
 export async function getAdminAttributes() {
   const res = await fetch(`${API_URL}/admin/attributes`, {
