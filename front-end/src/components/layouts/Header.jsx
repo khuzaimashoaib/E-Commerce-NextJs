@@ -101,6 +101,18 @@ export default function Header() {
                           </Link>
                         </li>
                       )}
+                      {user.role === "customer" && (
+                        <li>
+                          <Link
+                            href="/orders"
+                            style={{ fontSize: "13px", fontWeight: "500" }}
+                          >
+                            <i className="fa-solid fa-bag-shopping"></i> My
+                            Orders
+                          </Link>
+                        </li>
+                      )}
+
                       <li>
                         <span className="header-username">
                           Hi, {user.name.split(" ")[0]}

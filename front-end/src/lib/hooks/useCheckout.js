@@ -20,7 +20,7 @@ const DEFAULT_FORM = {
   paymentMethod: "cod",
 };
 function generateOrderNumber() {
-  return Math.floor(Math.random() * 900000000 + 100000000).toString();
+  return Math.floor(Math.random() * 90000 + 10000).toString();
 }
 
 export default function useCheckout() {

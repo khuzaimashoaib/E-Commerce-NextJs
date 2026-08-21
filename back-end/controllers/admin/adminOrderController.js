@@ -9,6 +9,7 @@ export const getAdminOrders = async (req, res) => {
       .sort({ createdAt: -1 });
     res.json(orders);
   } catch (error) {
+    console.error("Error:", error.message); // ← add
     res.status(500).json({ message: error.message });
   }
 };

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { getShipping } from "@/lib/utils/cartUtils";
+// import { getShipping } from "@/lib/utils/cartUtils";
 
 export default function OrderConfirmation() {
   const [order, setOrder] = useState(null);
@@ -52,7 +52,7 @@ export default function OrderConfirmation() {
           <div className="order-info-bar">
             <div className="info-item">
               <label>Order Number</label>
-              <span>{order.orderNumber}</span>
+              <span>{`#${order.orderNumber}`}</span>
             </div>
             <div className="info-item">
               <label>Date</label>
