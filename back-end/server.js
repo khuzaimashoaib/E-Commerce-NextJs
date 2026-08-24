@@ -20,6 +20,8 @@ import orderRoutes from "./routes/orderRoutes.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const allowedOrigins = ["http://localhost:3000", process.env.CLIENT_URL];
+
 dotenv.config({
   quiet: true,
 });
@@ -30,7 +32,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: allowedOrigins,
     credentials: true, // allow cookies cross-origin
   }),
 );
