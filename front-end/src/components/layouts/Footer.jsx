@@ -30,7 +30,7 @@ export default async function Footer() {
             <div className="col-xl-3 col-lg-4 col-md-4 wow fadeInUp">
               <div className="single-widget-items">
                 <div className="widget-head">
-                  <a href="index.html">
+                  <Link href="/">
                     <img
                       loading="eager"
                       src="assets/front-end-images/logo.png"
@@ -38,12 +38,12 @@ export default async function Footer() {
                       height={80}
                       width={150}
                     />
-                  </a>
+                  </Link>
                 </div>
                 <div className="footer-content">
                   <p>
                     Sign up for the newsletter and discover the latest arrivals
-                    and promotions from ou
+                    and promotions from us
                   </p>
                   <div className="social-icon d-flex align-items-center">
                     <a href="#">
