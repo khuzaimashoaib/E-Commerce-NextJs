@@ -929,3 +929,23 @@
   background: #fafafa;
   font-size: 14px;
 }
+.hero-section-4 .hero-content {
+  margin-top: 100px;
+  position: relative;
+  opacity: 1;
+  z-index: 3;
+  transform: translateY(0);
+}
+
+.hero-section-4 .hero-button {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.hero-section-4 .hero-image {
+  opacity: 1;
+  transform: translateY(0);
+}
+.hero-4 {
+  padding-bottom: 70px;
+}
