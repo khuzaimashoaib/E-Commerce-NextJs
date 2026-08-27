@@ -78,8 +78,8 @@ export default async function LatestCollSec() {
                                   href={`/shop/${product.slug}`}
                                   className="theme-btn"
                                 >
-                                  <i className="fa-regular fa-basket-shopping"></i>{" "}
-                                  Add to Cart
+                                  <i className="fa fa-basket-shopping"></i> Add
+                                  to Cart
                                 </Link>
 
                                 {/* Icons */}

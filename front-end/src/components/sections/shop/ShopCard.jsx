@@ -34,7 +34,7 @@ const ShopCard = ({ product }) => {
         )}
 
         <Link href={`/shop/${slug}`} className="theme-btn">
-          <i className="fa-regular fa-basket-shopping"></i> Add to Cart
+          <i className="fa fa-basket-shopping"></i> Add to Cart
         </Link>
 
         <ul className="gt-shop-icon d-grid justify-content-center align-items-center">

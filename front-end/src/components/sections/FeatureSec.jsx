@@ -1,8 +1,8 @@
-import React from 'react'
+import React from "react";
 
 const FeatureSec = () => {
   return (
-  <section className="feature-section-3 section-padding section-bg">
+    <section className="feature-section-3 section-padding section-bg">
       <div className="container">
         <div className="row">
           <div
@@ -11,12 +11,13 @@ const FeatureSec = () => {
           >
             <div className="feature-box-3 style-2">
               <div className="icon-circle">
-                <img src="assets/img/home-3/icon1.svg" alt="img" />
+                <img src="/assets/front-end-images/icons/icon1.svg" alt="img" />
               </div>
               <div className="content">
                 <h3>High Quality</h3>
                 <p>
-                  This title combines a strong <br className="d-none d-md-block" />
+                  This title combines a strong{" "}
+                  <br className="d-none d-md-block" />
                   call to action with the
                 </p>
               </div>
@@ -29,12 +30,13 @@ const FeatureSec = () => {
           >
             <div className="feature-box-3 style-2">
               <div className="icon-circle bg-blue">
-                <img src="assets/img/home-3/icon2.svg" alt="img" />
+                <img src="/assets/front-end-images/icons/icon2.svg" alt="img" />
               </div>
               <div className="content">
                 <h3>Best Protection</h3>
                 <p>
-                  This title combines a strong <br className="d-none d-md-block" />
+                  This title combines a strong{" "}
+                  <br className="d-none d-md-block" />
                   call to action with the
                 </p>
               </div>
@@ -47,12 +49,13 @@ const FeatureSec = () => {
           >
             <div className="feature-box-3 style-2">
               <div className="icon-circle">
-                <img src="assets/img/home-3/icon3.svg" alt="img" />
+                <img src="/assets/front-end-images/icons/icon3.svg" alt="img" />
               </div>
               <div className="contenet">
                 <h3>Free Shipping</h3>
                 <p>
-                  This title combines a strong <br className="d-none d-md-block" />
+                  This title combines a strong{" "}
+                  <br className="d-none d-md-block" />
                   call to action with the
                 </p>
               </div>
@@ -65,12 +68,13 @@ const FeatureSec = () => {
           >
             <div className="feature-box-3 style-2">
               <div className="icon-circle">
-                <img src="assets/img/home-3/icon4.svg" alt="img" />
+                <img src="/assets/front-end-images/icons/icon4.svg" alt="img" />
               </div>
               <div className="content">
                 <h3>24 / 7 Support</h3>
                 <p>
-                  This title combines a strong <br className="d-none d-md-block" />
+                  This title combines a strong{" "}
+                  <br className="d-none d-md-block" />
                   call to action with the
                 </p>
               </div>
@@ -79,7 +83,7 @@ const FeatureSec = () => {
         </div>
       </div>
     </section>
-  )
-}
+  );
+};
 
-export default FeatureSec
+export default FeatureSec;
