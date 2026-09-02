@@ -5,7 +5,7 @@ export default function ProductInfo({ product }) {
     discountPrice,
     description,
     brand,
-    category,
+    categories,
     rating,
     numReviews,
   } = product;
@@ -13,7 +13,7 @@ export default function ProductInfo({ product }) {
   return (
     <div className="gt-shop-details-content">
       {/* Category + Brand */}
-      <span>{category?.name}</span>
+      <span>{categories?.map((c) => c.name).join(", ")}</span>
 
       {/* Name */}
       <h2>{name}</h2>

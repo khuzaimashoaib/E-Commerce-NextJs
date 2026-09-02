@@ -14,7 +14,7 @@ import { getImageUrl } from "@/lib/utils/imageUtils";
 
 const DEFAULT_FORM = {
   name: "",
-  category: "",
+  categories: [],
   brand: "",
   price: "",
   discountPrice: "",
@@ -71,7 +71,7 @@ export default function ProductForm({ productId }) {
         if (product) {
           setForm({
             name: product.name,
-            category: product.category?._id || "",
+            categories: product.categories?.map((c) => c._id) || [],
             brand: product.brand || "",
             price: product.price,
             discountPrice: product.discountPrice || "",
@@ -99,6 +99,14 @@ export default function ProductForm({ productId }) {
     fetchProduct();
   }, [productId, isEditing]);
 
+  const toggleCategory = (categoryId) => {
+    setForm((prev) => ({
+      ...prev,
+      categories: prev.categories.includes(categoryId)
+        ? prev.categories.filter((id) => id !== categoryId)
+        : [...prev.categories, categoryId],
+    }));
+  };
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setForm((prev) => ({
@@ -158,7 +166,7 @@ export default function ProductForm({ productId }) {
     // Build FormData — needed for image upload
     const formData = new FormData();
     formData.append("name", form.name);
-    formData.append("category", form.category);
+    formData.append("categories", JSON.stringify(form.categories));
     formData.append("brand", form.brand);
     formData.append("price", form.price);
     formData.append("discountPrice", form.discountPrice || 0);
@@ -227,7 +235,7 @@ export default function ProductForm({ productId }) {
                   onChange={handleChange}
                 />
               </div>
-
+              {/* 
               <div className="col-md-6">
                 <label className="admin-label">Category*</label>
                 <select
@@ -244,6 +252,32 @@ export default function ProductForm({ productId }) {
                     </option>
                   ))}
                 </select>
+              </div> */}
+              {/* Categories — multi select checkboxes */}
+              <div className="col-md-12">
+                <label className="admin-label">
+                  Categories*
+                  <small className="text-muted ms-2">
+                    (select one or more)
+                  </small>
+                </label>
+                <div className="admin-checkbox-grid">
+                  {categories.map((cat) => (
+                    <label key={cat._id} className="admin-checkbox-item">
+                      <input
+                        type="checkbox"
+                        checked={form.categories.includes(cat._id)}
+                        onChange={() => toggleCategory(cat._id)}
+                      />
+                      <span>{cat.name}</span>
+                    </label>
+                  ))}
+                </div>
+                {form.categories.length === 0 && (
+                  <small className="text-danger">
+                    Select at least one category
+                  </small>
+                )}
               </div>
 
               <div className="col-md-12">

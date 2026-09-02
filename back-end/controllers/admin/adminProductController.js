@@ -12,7 +12,7 @@ function generateSlug(name) {
 export const getAdminProducts = async (req, res) => {
   try {
     const products = await Product.find()
-      .populate("category", "name slug")
+      .populate("categories", "name slug")
       .sort({ createdAt: -1 });
     res.json(products);
   } catch (error) {
@@ -26,7 +26,7 @@ export const createProduct = async (req, res) => {
   try {
     const {
       name,
-      category,
+      categories,
       brand,
       price,
       discountPrice,
@@ -48,10 +48,15 @@ export const createProduct = async (req, res) => {
       sku: v.sku || "",
     }));
 
+    const parsedCategories =
+      typeof categories === "string"
+        ? JSON.parse(categories)
+        : categories || [];
+
     const product = await Product.create({
       name,
       slug,
-      category,
+      categories: parsedCategories,
       brand,
       price: Number(price),
       discountPrice: Number(discountPrice) || 0,
@@ -76,7 +81,7 @@ export const updateProduct = async (req, res) => {
 
     const {
       name,
-      category,
+      categories,
       brand,
       price,
       discountPrice,
@@ -95,9 +100,14 @@ export const updateProduct = async (req, res) => {
       sku: v.sku || "",
     }));
 
+    const parsedCategories =
+      typeof categories === "string"
+        ? JSON.parse(categories)
+        : categories || [];
+
     product.name = name;
     product.slug = generateSlug(name);
-    product.category = category;
+    product.categories = parsedCategories;
     product.brand = brand;
     product.price = Number(price);
     product.discountPrice = Number(discountPrice) || 0;

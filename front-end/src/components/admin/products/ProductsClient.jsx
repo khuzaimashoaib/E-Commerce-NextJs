@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import AdminTable from "../ui/AdminTable";
 import AdminBadge from "../ui/AdminBadge";
-import AdminPageHeader from "../ui/AdminPageHeader";
 import Link from "next/link";
 import { deleteProduct, getAdminProducts } from "@/lib/api";
 import { getImageUrl } from "@/lib/utils/imageUtils";
@@ -12,7 +11,7 @@ const COLUMNS = [
   "#",
   "Image",
   "Name",
-  "Category",
+  "categories",
   "Price",
   "Stock",
   "Status",
@@ -81,7 +80,26 @@ export default function ProductsClient() {
                   )}
                 </div>
               </td>
-              <td>{product.category?.name || "—"}</td>
+              <td>
+                {product.categories?.length > 0 ? (
+                  <>
+                    {product.categories
+                      .slice(0, 1)
+                      .map((c) => c.name)
+                      .join(", ")}
+                    {product.categories.length > 1 && (
+                      <span
+                        className="text-muted ms-1"
+                        title={product.categories.map((c) => c.name).join(", ")} // ← show all on hover
+                      >
+                        +{product.categories.length - 1} more
+                      </span>
+                    )}
+                  </>
+                ) : (
+                  "—"
+                )}
+              </td>
               <td>
                 {product.discountPrice > 0 ? (
                   <>

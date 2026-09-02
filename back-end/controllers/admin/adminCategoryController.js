@@ -9,7 +9,7 @@ export const getAdminCategories = async (req, res) => {
 
     const categoriesWithCount = await Promise.all(
       categories.map(async (cat) => {
-        const count = await Product.countDocuments({ category: cat._id });
+        const count = await Product.countDocuments({ categories: cat._id });
         return { ...cat.toObject(), productCount: count };
       }),
     );

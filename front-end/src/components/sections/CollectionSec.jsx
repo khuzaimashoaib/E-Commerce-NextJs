@@ -7,8 +7,8 @@ export default async function CollectionSec() {
   // Fetch all products then filter by football-tshirts category
   const allProducts = await getProducts();
   const jerseys = allProducts
-    .filter((p) => p.category?.slug === "football-tshirts")
-    .slice(0, 8); // max 8 products
+    .filter((p) => p.categories?.some((c) => c.slug === "football-tshirts"))
+    .slice(0, 6);
 
   return (
     <section className="shop-section-4 fix section-padding">

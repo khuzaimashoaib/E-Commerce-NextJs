@@ -2,7 +2,7 @@ import { getImageUrl } from "@/lib/utils/imageUtils";
 import Link from "next/link";
 
 const ShopCard = ({ product }) => {
-  const { name, slug, images, category, price, discountPrice, variants } =
+  const { name, slug, images, categories, price, discountPrice, variants } =
     product;
 
   const colors = [...new Set(variants.map((v) => v.color).filter(Boolean))];
@@ -58,7 +58,7 @@ const ShopCard = ({ product }) => {
 
       <div className="shop-content">
         <div className="content">
-          <span>{category?.name}</span>
+          <span>{categories?.[0]?.name}</span>
           <h3>
             <Link href={`/shop/${slug}`}>{name}</Link>
           </h3>

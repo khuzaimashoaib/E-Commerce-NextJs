@@ -11,10 +11,10 @@ export const getProducts = async (req, res) => {
     // Category filter — find category by slug first, then use its _id
 
     if (category) {
-      const slugs = category.split(","); // support multiple: ?category=shoes,gloves
-      const categories = await Category.find({ slug: { $in: slugs } });
-      const categoryIds = categories.map((c) => c._id);
-      filter.category = { $in: categoryIds };
+      const slugs = category.split(",");
+      const cats = await Category.find({ slug: { $in: slugs } });
+      const categoryIds = cats.map((c) => c._id);
+      filter.categories = { $in: categoryIds }; // ← categories not category
     }
 
     // Price filter
@@ -46,7 +46,7 @@ export const getProducts = async (req, res) => {
     }
 
     const products = await Product.find(filter).populate(
-      "category",
+      "categories",
       "name slug",
     );
     res.json(products);
@@ -60,7 +60,7 @@ export const getProducts = async (req, res) => {
 export const getProductBySlug = async (req, res) => {
   try {
     const product = await Product.findOne({ slug: req.params.slug }).populate(
-      "category",
+      "categories",
       "name slug",
     );
 
