@@ -1,12 +1,16 @@
 "use client";
 
 import { useCartContext } from "@/lib/context/CartContext";
+import { useWishlistContext } from "@/lib/context/WishlistContext";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function ProductVariants({ variants, product }) {
+  const { toggleWishlist, isInWishlist } = useWishlistContext();
   const { addToCart } = useCartContext();
   const router = useRouter();
+
+  const inWishlist = isInWishlist(product._id);
 
   const attributeKeys =
     variants.length > 0 && variants[0].attributes
@@ -112,7 +116,7 @@ export default function ProductVariants({ variants, product }) {
             className="qtyminus"
             onClick={() => handleQuantityChange("decrement")}
           >
-            −
+            -
           </button>
           <input
             type="number"
@@ -139,7 +143,10 @@ export default function ProductVariants({ variants, product }) {
 
         <div className="icon-item">
           <a href="/wishlist" className="icon">
-            <i className="far fa-heart"></i>
+            <i
+              className={inWishlist ? "fas fa-heart" : "far fa-heart"}
+              style={{ color: inWishlist ? "red" : "inherit" }}
+            ></i>
           </a>
         </div>
       </div>

@@ -1,6 +1,7 @@
 import { getCategories } from "@/lib/api";
 import Link from "next/link";
 import React from "react";
+import FooterAccount from "./FooterAccount";
 
 export default async function Footer() {
   const categories = await getCategories();
@@ -110,14 +111,18 @@ export default async function Footer() {
               className="col-xl-2 col-lg-4 col-md-6 col-sm-6 wow fadeInUp"
               data-wow-delay=".6s"
             >
-              <div className="single-widget-items">
+              <FooterAccount />
+              {/* <div className="single-widget-items">
                 <div className="widget-head">
                   <h3>My Account</h3>
                 </div>
                 <ul className="gt-list-area">
-                  <li>
-                    <a href="contact.html"> Returns </a>
-                  </li>
+                  {user && (
+                    <li>
+                      <Link href="/orders">My Orders</Link>
+                    </li>
+                  )}
+
                   <li>
                     <a href="order-confirm.html"> Order History </a>
                   </li>
@@ -131,10 +136,10 @@ export default async function Footer() {
                     <a href="track-order.html"> Track Order </a>
                   </li>
                   <li>
-                    <a href="shop-cart.html"> My Cart </a>
+                    <Link href="/cart"> My Cart </Link>
                   </li>
                 </ul>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

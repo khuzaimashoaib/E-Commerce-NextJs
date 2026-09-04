@@ -1,9 +1,20 @@
+import { useWishlistContext } from "@/lib/context/WishlistContext";
 import { getImageUrl } from "@/lib/utils/imageUtils";
 import Link from "next/link";
 
 const ShopCard = ({ product }) => {
-  const { name, slug, images, categories, price, discountPrice, variants } =
-    product;
+  const { toggleWishlist, isInWishlist } = useWishlistContext();
+  const {
+    name,
+    slug,
+    images,
+    categories,
+    price,
+    discountPrice,
+    variants = [],
+  } = product;
+
+  const inWishlist = isInWishlist(product._id);
 
   const colors = [...new Set(variants.map((v) => v.color).filter(Boolean))];
   const extraColors = colors.length > 3 ? colors.length - 3 : 0;
@@ -39,15 +50,18 @@ const ShopCard = ({ product }) => {
 
         <ul className="gt-shop-icon d-grid justify-content-center align-items-center">
           <li>
-            <a href="/wishlist">
-              <i className="far fa-heart"></i>
-            </a>
+            <button
+              onClick={() => toggleWishlist(product)}
+              title={inWishlist ? "Remove from wishlist" : "Add to wishlist"}
+              style={{ background: "none", border: "none", cursor: "pointer" }}
+            >
+              <i
+                className={inWishlist ? "fas fa-heart" : "far fa-heart"}
+                style={{ color: inWishlist ? "red" : "inherit" }}
+              ></i>
+            </button>
           </li>
-          <li>
-            <a href="/compare">
-              <i className="fa-solid fa-code-compare"></i>
-            </a>
-          </li>
+
           <li>
             <Link href={`/shop/${slug}`}>
               <i className="far fa-eye"></i>

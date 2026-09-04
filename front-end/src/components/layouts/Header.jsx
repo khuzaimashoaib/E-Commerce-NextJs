@@ -1,15 +1,17 @@
 "use client";
 
-import { useCartContext } from "@/lib/context/CartContext";
-import { useAuthContext } from "@/lib/context/AuthContext";
 import { logoutUser } from "@/lib/api";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useCartContext } from "@/lib/context/CartContext";
+import { useAuthContext } from "@/lib/context/AuthContext";
+import { useWishlistContext } from "@/lib/context/WishlistContext";
 
 export default function Header() {
   const { itemCount } = useCartContext();
+  const { wishlistCount } = useWishlistContext();
   const { user, authLoaded, clearUser } = useAuthContext();
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -61,15 +63,15 @@ export default function Header() {
                   <div className="main-menu">
                     <nav id="mobile-menu">
                       <ul>
-                        <li>
+                        {/* <li>
                           <Link href="/about">About Us</Link>
-                        </li>
+                        </li> */}
                         <li>
                           <Link href="/shop">Shop</Link>
                         </li>
-                        <li>
+                        {/* <li>
                           <Link href="/contact">Contact Us</Link>
-                        </li>
+                        </li> */}
                       </ul>
                     </nav>
                   </div>
@@ -135,6 +137,14 @@ export default function Header() {
                       </Link>
                     </li>
                   )}
+                  <li>
+                    <Link href="/wishlist">
+                      <i className="fa-regular fa-heart"></i>
+                      {wishlistCount > 0 && (
+                        <span className="number">{wishlistCount}</span>
+                      )}
+                    </Link>
+                  </li>
 
                   {/* Cart */}
                   <li>
@@ -146,13 +156,6 @@ export default function Header() {
                     </Link>
                   </li>
                 </ul>
-
-                {/* Hamburger */}
-                <div className="header__hamburger my-auto">
-                  <div className="sidebar__toggle">
-                    <i className="fa-solid fa-align-right"></i>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
