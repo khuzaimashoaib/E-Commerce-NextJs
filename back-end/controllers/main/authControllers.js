@@ -1,5 +1,5 @@
-import User from "../models/User.js";
-import generateToken, { setTokenCookie } from "../utils/generateToken.js";
+import User from "../../models/User.js";
+import generateToken, { setTokenCookie } from "../../utils/generateToken.js";
 
 // @desc    Register new user
 // @route   POST /api/auth/register

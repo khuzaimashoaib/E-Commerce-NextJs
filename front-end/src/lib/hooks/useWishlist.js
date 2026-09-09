@@ -1,69 +1,63 @@
 import { useEffect, useState } from "react";
-import {
-  addToWishlist,
-  getWishlistCount,
-  isInWishlist,
-  removeFromWishlist,
-} from "../utils/wishlistUtils";
+import { getWishlist, toggleWishlistItem } from "../api";
 
-const WISHLIST_KEY = "sports_wishlist";
-
-function saveWishlist(items) {
-  try {
-    localStorage.setItem(WISHLIST_KEY, JSON.stringify(items));
-  } catch {
-    console.error("Failed to save wishlist");
-  }
-}
-
-function loadWishlist() {
-  try {
-    const stored = localStorage.getItem(WISHLIST_KEY);
-    return stored ? JSON.parse(stored) : [];
-  } catch {
-    return [];
-  }
-}
-
-export default function useWishlist() {
+export default function useWishlist(user) {
   const [wishlistItems, setWishlistItems] = useState([]);
   const [wishlistLoaded, setWishlistLoaded] = useState(false);
+  const [wishlistIds, setWishlistIds] = useState([]);
 
   useEffect(() => {
-    setWishlistItems(loadWishlist());
-    setWishlistLoaded(true);
-  }, []);
+    if (!user) {
+      setWishlistItems([]);
+      setWishlistIds([]);
+      setWishlistLoaded(true);
+      return;
+    }
 
-  useEffect(() => {
-    if (wishlistLoaded) saveWishlist(wishlistItems);
-  }, [wishlistItems, wishlistLoaded]);
-
-  /** Add product to wishlist */
-  const handleAddToWishlist = (product) => {
-    setWishlistItems((prev) => addToWishlist(prev, product));
-  };
-
-  /** Remove product from wishlist */
-  const handleRemoveFromWishlist = (productId) => {
-    setWishlistItems((prev) => removeFromWishlist(prev, productId));
-  };
-
-  const handleToggleWishlist = (product) => {
-    setWishlistItems((prev) => {
-      if (isInWishlist(prev, product._id)) {
-        return removeFromWishlist(prev, product._id);
+    const fetchWishlist = async () => {
+      try {
+        const data = await getWishlist();
+        setWishlistItems(data);
+        setWishlistIds(data.map((p) => p._id));
+      } catch (error) {
+        console.error("Failed to fetch wishlist:", error);
+      } finally {
+        setWishlistLoaded(true);
       }
-      return addToWishlist(prev, product);
-    });
+    };
+    fetchWishlist();
+  }, [user]);
+
+  const handleToggleWishlist = async (product) => {
+    if (!user) {
+      return {
+        success: false,
+        message: "Please login first to use wishlist",
+      };
+    }
+
+    try {
+      const result = await toggleWishlistItem(product._id);
+
+      if (result.inWishlist) {
+        // Added — add full product to items
+        setWishlistItems((prev) => [...prev, product]);
+        setWishlistIds((prev) => [...prev, product._id]);
+      } else {
+        // Removed
+        setWishlistItems((prev) => prev.filter((p) => p._id !== product._id));
+        setWishlistIds((prev) => prev.filter((id) => id !== product._id));
+      }
+    } catch (error) {
+      console.error("Failed to toggle wishlist:", error);
+    }
   };
 
   return {
     wishlistItems,
     wishlistLoaded,
-    wishlistCount: getWishlistCount(wishlistItems),
-    addToWishlist: handleAddToWishlist,
-    removeFromWishlist: handleRemoveFromWishlist,
+    wishlistCount: wishlistIds.length,
     toggleWishlist: handleToggleWishlist,
-    isInWishlist: (productId) => isInWishlist(wishlistItems, productId),
+    isInWishlist: (productId) => wishlistIds.includes(productId),
   };
 }

@@ -16,6 +16,7 @@ import adminOrderRoutes from "./routes/admin/adminOrderRoutes.js";
 import adminStatsRoutes from "./routes/admin/adminStatsRoutes.js";
 import adminAttributeRoutes from "./routes/admin/adminAttributeRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
+import wishlistRoutes from "./routes/wishlistRoutes.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -48,6 +49,7 @@ app.use("/api/categories", categoryRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/attributes", attributeRoutes);
 app.use("/api/orders", orderRoutes);
+app.use("/api/wishlist", wishlistRoutes);
 
 app.use("/api/admin/products", adminProductRoutes);
 app.use("/api/admin/categories", adminCategoryRoutes);

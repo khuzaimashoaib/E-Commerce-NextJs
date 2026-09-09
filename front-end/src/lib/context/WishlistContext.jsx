@@ -1,11 +1,13 @@
 "use client";
 import { createContext, useContext } from "react";
 import useWishlist from "../hooks/useWishlist";
+import { useAuthContext } from "./AuthContext";
 
 const WishlistContext = createContext(null);
 
 export function WishlistProvider({ children }) {
-  const wishlist = useWishlist();
+  const { user } = useAuthContext();
+  const wishlist = useWishlist(user);
 
   return (
     <WishlistContext.Provider value={wishlist}>

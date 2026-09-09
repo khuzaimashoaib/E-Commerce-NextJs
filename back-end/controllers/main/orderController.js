@@ -1,7 +1,7 @@
 // @desc   Create order (guest + logged in)
 
-import Order from "../models/Order.js";
-import Product from "../models/Product.js";
+import Order from "../../models/Order.js";
+import Product from "../../models/Product.js";
 
 // @route  POST /api/orders
 export const createOrder = async (req, res) => {

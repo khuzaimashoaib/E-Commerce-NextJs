@@ -4,6 +4,7 @@ import Script from "next/script";
 import { CardProvider } from "@/lib/context/CartContext";
 import { AuthProvider } from "@/lib/context/AuthContext";
 import { WishlistProvider } from "@/lib/context/WishlistContext";
+import { Toaster } from "react-hot-toast";
 
 export default function MainLayout({ children }) {
   return (
@@ -17,6 +18,8 @@ export default function MainLayout({ children }) {
           </WishlistProvider>
         </CardProvider>
       </AuthProvider>
+
+      <Toaster position="top-right" />
     </>
   );
 }

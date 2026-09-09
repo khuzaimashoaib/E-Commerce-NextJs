@@ -1,6 +1,7 @@
 import { useWishlistContext } from "@/lib/context/WishlistContext";
 import { getImageUrl } from "@/lib/utils/imageUtils";
 import Link from "next/link";
+import toast from "react-hot-toast";
 
 const ShopCard = ({ product }) => {
   const { toggleWishlist, isInWishlist } = useWishlistContext();
@@ -13,6 +14,13 @@ const ShopCard = ({ product }) => {
     discountPrice,
     variants = [],
   } = product;
+  const handleWishlist = async () => {
+    const response = await toggleWishlist(product);
+
+    if (!response?.success) {
+      toast.error("Please login first to add items to wishlist");
+    }
+  };
 
   const inWishlist = isInWishlist(product._id);
 
@@ -51,13 +59,19 @@ const ShopCard = ({ product }) => {
         <ul className="gt-shop-icon d-grid justify-content-center align-items-center">
           <li>
             <button
-              onClick={() => toggleWishlist(product)}
+              onClick={handleWishlist}
               title={inWishlist ? "Remove from wishlist" : "Add to wishlist"}
-              style={{ background: "none", border: "none", cursor: "pointer" }}
+              style={{
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+              }}
             >
               <i
                 className={inWishlist ? "fas fa-heart" : "far fa-heart"}
-                style={{ color: inWishlist ? "red" : "inherit" }}
+                style={{
+                  color: inWishlist ? "red" : "inherit",
+                }}
               ></i>
             </button>
           </li>

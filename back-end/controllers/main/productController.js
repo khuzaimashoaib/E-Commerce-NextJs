@@ -1,5 +1,5 @@
-import Product from "../models/Product.js";
-import Category from "../models/Category.js";
+import Category from "../../models/Category.js";
+import Product from "../../models/Product.js";
 
 // @desc    Get all products
 // @route   GET /api/products
