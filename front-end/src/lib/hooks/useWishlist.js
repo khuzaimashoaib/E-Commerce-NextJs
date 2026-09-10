@@ -48,8 +48,10 @@ export default function useWishlist(user) {
         setWishlistItems((prev) => prev.filter((p) => p._id !== product._id));
         setWishlistIds((prev) => prev.filter((id) => id !== product._id));
       }
+      return result;
     } catch (error) {
       console.error("Failed to toggle wishlist:", error);
+      throw error;
     }
   };
 

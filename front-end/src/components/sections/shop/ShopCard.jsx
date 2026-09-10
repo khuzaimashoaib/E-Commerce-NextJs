@@ -1,10 +1,14 @@
+import { useAuthContext } from "@/lib/context/AuthContext";
 import { useWishlistContext } from "@/lib/context/WishlistContext";
 import { getImageUrl } from "@/lib/utils/imageUtils";
+
 import Link from "next/link";
 import toast from "react-hot-toast";
 
 const ShopCard = ({ product }) => {
   const { toggleWishlist, isInWishlist } = useWishlistContext();
+  const { user } = useAuthContext();
+
   const {
     name,
     slug,
@@ -14,15 +18,24 @@ const ShopCard = ({ product }) => {
     discountPrice,
     variants = [],
   } = product;
-  const handleWishlist = async () => {
-    const response = await toggleWishlist(product);
-
-    if (!response?.success) {
-      toast.error("Please login first to add items to wishlist");
-    }
-  };
 
   const inWishlist = isInWishlist(product._id);
+  const handleWishlist = async () => {
+    if (!user) {
+      toast.error("Please login to add to wishlist");
+      return;
+    }
+    try {
+      const result = await toggleWishlist(product);
+      if (result?.inWishlist) {
+        toast.success("Added to wishlist!");
+      } else {
+        toast.success("Removed from wishlist");
+      }
+    } catch {
+      toast.error("Failed to update wishlist");
+    }
+  };
 
   const colors = [...new Set(variants.map((v) => v.color).filter(Boolean))];
   const extraColors = colors.length > 3 ? colors.length - 3 : 0;
@@ -60,7 +73,13 @@ const ShopCard = ({ product }) => {
           <li>
             <button
               onClick={handleWishlist}
-              title={inWishlist ? "Remove from wishlist" : "Add to wishlist"}
+              title={
+                !user
+                  ? "Login to add to wishlist"
+                  : inWishlist
+                    ? "Remove from wishlist"
+                    : "Add to wishlist"
+              }
               style={{
                 background: "none",
                 border: "none",

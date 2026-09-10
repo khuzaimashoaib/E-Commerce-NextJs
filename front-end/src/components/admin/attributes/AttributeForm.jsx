@@ -3,6 +3,7 @@ import { createAttribute, updateAttribute, getAttributeById } from "@/lib/api";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 const AttributeForm = ({ attributeId }) => {
   const router = useRouter();
@@ -13,7 +14,6 @@ const AttributeForm = ({ attributeId }) => {
   const [inputValue, setInputValue] = useState(""); // current tag input
   const [loading, setLoading] = useState(false);
   const [fetchLoading, setFetchLoading] = useState(isEditing);
-  const [error, setError] = useState("");
 
   // Fetch existing attribute when editing
   useEffect(() => {
@@ -25,7 +25,7 @@ const AttributeForm = ({ attributeId }) => {
         setName(attribute.name);
         setValues(attribute.values); // ← pre-fill ALL existing values
       } catch (err) {
-        setError("Failed to load attribute");
+        toast.error("Failed to load attribute");
       } finally {
         setFetchLoading(false);
       }
@@ -58,7 +58,6 @@ const AttributeForm = ({ attributeId }) => {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
 
     // Add any pending input value that wasn't confirmed with Enter
     let finalValues = [...values];
@@ -70,11 +69,17 @@ const AttributeForm = ({ attributeId }) => {
     }
 
     if (!name.trim()) {
-      setError("Attribute name is required");
+      toast("Attribute name is required", {
+        icon: "⚠️",
+      });
+      // setError("Attribute name is required");
       return;
     }
     if (finalValues.length === 0) {
-      setError("Add at least one value");
+      toast("Add at least one value", {
+        icon: "⚠️",
+      });
+      // setError("Add at least one value");
       return;
     }
 
@@ -88,7 +93,7 @@ const AttributeForm = ({ attributeId }) => {
       }
       router.push("/dashboard/attributes");
     } catch (err) {
-      setError(err.message);
+      toast.error("Something went wrong");
     } finally {
       setLoading(false);
     }
@@ -109,7 +114,7 @@ const AttributeForm = ({ attributeId }) => {
           <div className="admin-form-card">
             <h6 className="admin-form-card-title">Attribute Details</h6>
 
-            {error && <div className="alert alert-danger mb-3">{error}</div>}
+            {/* {error && <div className="alert alert-danger mb-3">{error}</div>} */}
 
             {/* Attribute Name */}
             <div className="mb-4">
@@ -120,7 +125,6 @@ const AttributeForm = ({ attributeId }) => {
                 placeholder="e.g. Size, Color, Material"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                required
               />
               <small className="text-muted">
                 This is the name that appears on the product page

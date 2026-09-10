@@ -3,6 +3,7 @@ import { createCategory, getAdminCategories, updateCategory } from "@/lib/api";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 const CategoryForm = ({ categoryId }) => {
   const router = useRouter();
@@ -45,7 +46,9 @@ const CategoryForm = ({ categoryId }) => {
           if (category.image) setImagePreview(getImageUrl(category.image));
         }
       } catch (err) {
-        setError("Failed to load category");
+        toast("Failed to load category", {
+          icon: "⚠️",
+        });
       } finally {
         setFetchLoading(false);
       }
@@ -62,14 +65,19 @@ const CategoryForm = ({ categoryId }) => {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
+    // setError("");
 
     if (!name.trim()) {
-      setError("Category name is required");
+      toast("Category name is required", {
+        icon: "⚠️",
+      });
+      // setError("Category name is required");
       return;
     }
     if (!slug.trim()) {
-      setError("Slug is required");
+      toast("Slug is required", {
+        icon: "⚠️",
+      });
       return;
     }
 
@@ -110,7 +118,7 @@ const CategoryForm = ({ categoryId }) => {
           <div className="admin-form-card">
             <h6 className="admin-form-card-title">Category Details</h6>
 
-            {error && <div className="alert alert-danger mb-3">{error}</div>}
+            {/* {error && <div className="alert alert-danger mb-3">{error}</div>} */}
 
             {/* Name */}
             <div className="mb-3">
@@ -121,29 +129,19 @@ const CategoryForm = ({ categoryId }) => {
                 placeholder="e.g. Football T-Shirts"
                 value={name}
                 onChange={handleNameChange}
-                required
               />
             </div>
 
             {/* Slug */}
             <div className="mb-3">
-              <label className="admin-label">
-                Slug*
-                <small className="text-muted ms-2">
-                  (auto-generated from name)
-                </small>
-              </label>
+              <label className="admin-label">Slug*</label>
               <input
                 type="text"
                 className="admin-input"
                 placeholder="e.g. football-tshirts"
                 value={slug}
                 onChange={(e) => setSlug(e.target.value)}
-                required
               />
-              <small className="text-muted">
-                Used in URLs: /shop?category={slug || "your-slug"}
-              </small>
             </div>
           </div>
         </div>

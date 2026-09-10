@@ -18,8 +18,7 @@ export default function MainLayout({ children }) {
           </WishlistProvider>
         </CardProvider>
       </AuthProvider>
-
-      <Toaster position="top-right" />
+      <Toaster position="bottom-right" />
     </>
   );
 }

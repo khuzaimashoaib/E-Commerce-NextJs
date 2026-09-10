@@ -11,6 +11,7 @@ import {
   getAttributes,
 } from "@/lib/api";
 import { getImageUrl } from "@/lib/utils/imageUtils";
+import toast from "react-hot-toast";
 
 const DEFAULT_FORM = {
   name: "",
@@ -36,7 +37,7 @@ export default function ProductForm({ productId }) {
   const [attributes, setAttributesList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [fetchLoading, setFetchLoading] = useState(true);
-  const [error, setError] = useState("");
+  // const [error, setError] = useState("");
 
   // Fetch categories + attributes on mount
   useEffect(() => {
@@ -46,12 +47,11 @@ export default function ProductForm({ productId }) {
           getAdminCategories(),
           getAttributes(),
         ]);
-        console.log("Categories:", catsData); // ← add this
-        console.log("Attributes:", attrsData); // ← add this
+
         setCategories(catsData);
         setAttributesList(attrsData);
       } catch (err) {
-        setError("Failed to load form data");
+        toast.error("Failed to load form data");
       }
     };
     fetchData();
@@ -90,7 +90,7 @@ export default function ProductForm({ productId }) {
           }
         }
       } catch (err) {
-        setError("Failed to load product");
+        toast.error("Failed to load product");
       } finally {
         setFetchLoading(false);
       }
@@ -156,10 +156,46 @@ export default function ProductForm({ productId }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
+
+    if (!form.name.trim()) {
+      toast("Product name is required", {
+        icon: "⚠️",
+      });
+      return;
+    }
+
+    if (form.categories.length === 0) {
+      toast("Select at least one category", {
+        icon: "⚠️",
+      });
+      return;
+    }
+
+    if (!form.description.trim()) {
+      toast("Product description is required", {
+        icon: "⚠️",
+      });
+      return;
+    }
+
+    if (!form.price) {
+      toast("Product price is required", {
+        icon: "⚠️",
+      });
+      return;
+    }
+
+    // if (!form.variants) {
+    //   toast("Select at least one variant", {
+    //     icon: "⚠️",
+    //   });
+    //   return;
+    // }
 
     if (variants.length === 0) {
-      setError("Add at least one variant");
+      toast("Add at least one variant", {
+        icon: "⚠️",
+      });
       return;
     }
 
@@ -184,7 +220,7 @@ export default function ProductForm({ productId }) {
       }
       router.push("/dashboard/products");
     } catch (err) {
-      setError(err.message);
+      toast.error("err");
     } finally {
       setLoading(false);
     }
@@ -208,7 +244,7 @@ export default function ProductForm({ productId }) {
           <div className="admin-form-card">
             <h6 className="admin-form-card-title">Basic Information</h6>
 
-            {error && <div className="alert alert-danger mb-3">{error}</div>}
+            {/* {error && <div className="alert alert-danger mb-3">{error}</div>} */}
 
             <div className="row g-3">
               <div className="col-md-12">
@@ -220,7 +256,6 @@ export default function ProductForm({ productId }) {
                   placeholder="e.g. Nike Dri-FIT Football Jersey"
                   value={form.name}
                   onChange={handleChange}
-                  required
                 />
               </div>
 
@@ -236,23 +271,7 @@ export default function ProductForm({ productId }) {
                 />
               </div>
               {/* 
-              <div className="col-md-6">
-                <label className="admin-label">Category*</label>
-                <select
-                  name="category"
-                  className="admin-input"
-                  value={form.category}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="">Select category</option>
-                  {categories.map((cat) => (
-                    <option key={cat._id} value={cat._id}>
-                      {cat.name}
-                    </option>
-                  ))}
-                </select>
-              </div> */}
+             
               {/* Categories — multi select checkboxes */}
               <div className="col-md-12">
                 <label className="admin-label">
@@ -273,11 +292,6 @@ export default function ProductForm({ productId }) {
                     </label>
                   ))}
                 </div>
-                {form.categories.length === 0 && (
-                  <small className="text-danger">
-                    Select at least one category
-                  </small>
-                )}
               </div>
 
               <div className="col-md-12">
@@ -289,7 +303,6 @@ export default function ProductForm({ productId }) {
                   placeholder="Product description..."
                   value={form.description}
                   onChange={handleChange}
-                  required
                 ></textarea>
               </div>
             </div>
@@ -309,10 +322,9 @@ export default function ProductForm({ productId }) {
                     className="admin-input"
                     placeholder="0.00"
                     min="0"
-                    step="0.01"
+                    step="1"
                     value={form.price}
                     onChange={handleChange}
-                    required
                   />
                 </div>
               </div>
@@ -330,7 +342,7 @@ export default function ProductForm({ productId }) {
                     className="admin-input"
                     placeholder="0.00"
                     min="0"
-                    step="0.01"
+                    step="1"
                     value={form.discountPrice}
                     onChange={handleChange}
                   />

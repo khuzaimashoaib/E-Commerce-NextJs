@@ -3,6 +3,7 @@ import AdminProtect from "@/components/admin/AdminProtect";
 import AdminSidebar from "@/components/admin/layouts/AdminSidebar";
 import { AuthProvider } from "@/lib/context/AuthContext";
 import Link from "next/link";
+import { Toaster } from "react-hot-toast";
 
 export default function AdminLayout({ children }) {
   return (
@@ -18,6 +19,7 @@ export default function AdminLayout({ children }) {
           </div>
         </AdminProtect>
       </AuthProvider>
+      <Toaster position="top-right" />
     </>
   );
 }

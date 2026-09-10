@@ -1,13 +1,16 @@
 "use client";
 
+import { useState } from "react";
 import { useCartContext } from "@/lib/context/CartContext";
 import { useWishlistContext } from "@/lib/context/WishlistContext";
+import { useAuthContext } from "@/lib/context/AuthContext";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import toast from "react-hot-toast";
 
 export default function ProductVariants({ variants, product }) {
-  const { toggleWishlist, isInWishlist } = useWishlistContext();
   const { addToCart } = useCartContext();
+  const { toggleWishlist, isInWishlist } = useWishlistContext();
+  const { user } = useAuthContext();
   const router = useRouter();
 
   const inWishlist = isInWishlist(product._id);
@@ -17,21 +20,21 @@ export default function ProductVariants({ variants, product }) {
       ? Object.keys(variants[0].attributes)
       : [];
 
-  // Get unique values per attribute key
   const getAttributeValues = (attrName) => {
     return [
       ...new Set(variants.map((v) => v.attributes?.[attrName]).filter(Boolean)),
     ];
   };
+
   const [selectedAttributes, setSelectedAttributes] = useState({});
   const [quantity, setQuantity] = useState(1);
-  const [addedMsg, setAddedMsg] = useState("");
 
   const selectedVariant = variants.find((v) =>
     Object.entries(selectedAttributes).every(
       ([key, val]) => v.attributes?.[key] === val,
     ),
   );
+
   const allSelected = attributeKeys.every((key) => selectedAttributes[key]);
   const inStock = selectedVariant ? selectedVariant.stock > 0 : false;
   const stockLeft = selectedVariant?.stock || 0;
@@ -42,33 +45,54 @@ export default function ProductVariants({ variants, product }) {
   };
 
   const handleQuantityChange = (type) => {
-    if (type === "increment" && quantity < stockLeft) {
+    if (type === "increment" && quantity < stockLeft)
       setQuantity((prev) => prev + 1);
-    }
-    if (type === "decrement" && quantity > 1) {
-      setQuantity((prev) => prev - 1);
-    }
+    if (type === "decrement" && quantity > 1) setQuantity((prev) => prev - 1);
   };
 
   const handleAddToCart = () => {
     if (!allSelected) {
-      alert("Please select all options first");
+      toast.error("Please select all options first");
       return;
     }
     if (!inStock) {
-      alert("This variant is out of stock");
+      toast.error("This variant is out of stock");
       return;
     }
     addToCart(product, selectedVariant, quantity);
-    setAddedMsg("Added to cart!");
-    setTimeout(() => setAddedMsg(""), 3000);
+    toast.success(`${product.name} added to cart!`);
   };
 
   const handleBuyNow = () => {
-    if (!allSelected || !inStock) return;
+    if (!allSelected) {
+      toast.error("Please select all options first");
+      return;
+    }
+    if (!inStock) {
+      toast.error("This variant is out of stock");
+      return;
+    }
     addToCart(product, selectedVariant, quantity);
     router.push("/cart");
   };
+
+  const handleWishlist = async () => {
+    if (!user) {
+      toast.error("Please login to add to wishlist");
+      return;
+    }
+    try {
+      const result = await toggleWishlist(product);
+      if (result?.inWishlist) {
+        toast.success("Added to wishlist!");
+      } else {
+        toast.success("Removed from wishlist");
+      }
+    } catch {
+      toast.error("Failed to update wishlist");
+    }
+  };
+
   return (
     <div className="gt-shop-details-content">
       {/* Attribute Selectors */}
@@ -101,14 +125,6 @@ export default function ProductVariants({ variants, product }) {
         </p>
       )}
 
-      {/* Success Message */}
-      {addedMsg && (
-        <div className="alert alert-success py-2 mb-3">
-          <i className="fa-solid fa-check me-2"></i>
-          {addedMsg}
-        </div>
-      )}
-
       {/* Quantity + Add to Cart */}
       <div className="cart-quantity">
         <p className="qty">
@@ -116,7 +132,7 @@ export default function ProductVariants({ variants, product }) {
             className="qtyminus"
             onClick={() => handleQuantityChange("decrement")}
           >
-            -
+            −
           </button>
           <input
             type="number"
@@ -141,13 +157,25 @@ export default function ProductVariants({ variants, product }) {
           Add to Cart
         </button>
 
+        {/* Wishlist heart button */}
         <div className="icon-item">
-          <a href="/wishlist" className="icon">
+          <button
+            onClick={handleWishlist}
+            className="icon"
+            title={
+              !user
+                ? "Login to add to wishlist"
+                : inWishlist
+                  ? "Remove from wishlist"
+                  : "Add to wishlist"
+            }
+            style={{ background: "none", border: "none", cursor: "pointer" }}
+          >
             <i
-              className={inWishlist ? "fas fa-heart" : "far fa-heart"}
-              style={{ color: inWishlist ? "red" : "inherit" }}
+              className={user && inWishlist ? "fas fa-heart" : "far fa-heart"}
+              style={{ color: user && inWishlist ? "red" : "inherit" }}
             ></i>
-          </a>
+          </button>
         </div>
       </div>
 
