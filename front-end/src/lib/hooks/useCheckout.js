@@ -4,7 +4,7 @@ import { useCartContext } from "../context/CartContext";
 import { useState } from "react";
 import { getCartTotal, getShipping } from "../utils/cartUtils";
 import { useRouter } from "next/navigation";
-import { createOrder } from "../api";
+import { createOrder, createStripeSession, verifyStripeSession } from "../api";
 
 const DEFAULT_FORM = {
   firstName: "",
@@ -29,6 +29,7 @@ export default function useCheckout() {
   const [form, setForm] = useState(DEFAULT_FORM);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  const [stripeClientSecret, setStripeClientSecret] = useState(null);
 
   const shipping = getShipping(subtotal);
   const total = getCartTotal(subtotal);
@@ -43,7 +44,12 @@ export default function useCheckout() {
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
   };
-
+  const onPaymentMethodChange = (method) => {
+    setForm((prev) => ({
+      ...prev,
+      paymentMethod: method,
+    }));
+  };
   const validate = () => {
     const newErrors = {};
     if (!form.firstName.trim()) newErrors.firstName = "First name is required";
@@ -66,7 +72,21 @@ export default function useCheckout() {
     }
 
     setLoading(true);
+
     try {
+      if (form.paymentMethod === "stripe") {
+        const session = await createStripeSession({
+          items: cartItems,
+          customerInfo: form,
+          shipping,
+          orderNumber,
+        });
+
+        console.log("Stripe session response:", session);
+        setStripeClientSecret(session.clientSecret);
+
+        return;
+      }
       const orderData = {
         orderNumber: generateOrderNumber(),
         customerInfo: form,
@@ -115,7 +135,9 @@ export default function useCheckout() {
     loading,
     shipping,
     total,
+    stripeClientSecret,
     handleChange,
     handlePlaceOrder,
+    onPaymentMethodChange,
   };
 }

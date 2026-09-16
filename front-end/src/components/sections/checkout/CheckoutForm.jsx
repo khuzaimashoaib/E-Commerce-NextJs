@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import StripePaymentForm from "./StripePaymentForm";
 
 const COUNTRIES = ["Pakistan"];
 const STATES = ["Punjab", "Sindh", "KPK", "Balochistan"];
@@ -11,6 +12,10 @@ export default function CheckoutForm({
   onChange,
   onSubmit,
   loading,
+  onPaymentMethodChange,
+  stripeClientSecret,
+  onStripeSuccess,
+  onStripeError,
 }) {
   return (
     <div className="checkout-left">
@@ -151,7 +156,12 @@ export default function CheckoutForm({
       <div className="section-box payment-section">
         <h2 className="title">Payment Option</h2>
         <div className="payment-methods">
-          <div className="method-item payment-option active">
+          {/* Cash on Delivery */}
+          <div
+            className={`method-item mb-3 ${
+              form.paymentMethod === "cod" ? "payment-option active" : ""
+            }`}
+          >
             <div className="method-header">
               <div className="custom-radio">
                 <input
@@ -160,7 +170,10 @@ export default function CheckoutForm({
                   id="cod"
                   value="cod"
                   checked={form.paymentMethod === "cod"}
-                  onChange={onChange}
+                  onChange={(e) => {
+                    onChange(e);
+                    onPaymentMethodChange("cod");
+                  }}
                 />
                 <label htmlFor="cod">Cash on Delivery</label>
               </div>
@@ -168,23 +181,82 @@ export default function CheckoutForm({
             {form.paymentMethod === "cod" && (
               <div className="method-content mt-2">
                 <p className="desc">
-                  Pay with cash upon delivery. Our delivery agent will collect
-                  the payment at your doorstep.
+                  Pay with cash upon delivery. Our agent will collect payment at
+                  your doorstep.
                 </p>
+              </div>
+            )}
+          </div>
+          <div
+            className={`method-item ${
+              form.paymentMethod === "stripe" ? "payment-option active" : ""
+            }`}
+          >
+            <div className="method-header">
+              <div className="custom-radio">
+                <input
+                  type="radio"
+                  name="paymentMethod"
+                  id="stripe"
+                  value="stripe"
+                  checked={form.paymentMethod === "stripe"}
+                  onChange={(e) => {
+                    onChange(e);
+                    onPaymentMethodChange("stripe");
+                  }}
+                />
+                <label htmlFor="stripe">
+                  Credit / Debit Card
+                  <span className="ms-2">
+                    <i className="fab fa-cc-visa"></i>{" "}
+                    <i className="fab fa-cc-mastercard"></i>{" "}
+                    <i className="fab fa-cc-amex"></i>
+                  </span>
+                </label>
+              </div>
+            </div>
+            {form.paymentMethod === "stripe" && (
+              <div className="method-content mt-2">
+                <p className="desc">
+                  Secure payment powered by Stripe. Your card details are
+                  encrypted.
+                </p>
+                <StripePaymentForm
+                  clientSecret={stripeClientSecret}
+                  onSuccess={onStripeSuccess}
+                  onError={onStripeError}
+                />
               </div>
             )}
           </div>
         </div>
       </div>
-      <button
-        className="theme-btn text-center w-100"
-        onClick={onSubmit}
-        disabled={loading}
-      >
-        {loading ? "Placing Order..." : "Place Order"}
-      </button>
-      {errors.submit && (
-        <div className="alert alert-danger mt-2">{errors.submit}</div>
+
+      {form.paymentMethod === "stripe" && !stripeClientSecret && (
+        <button
+          type="button"
+          className="theme-btn text-center w-100 mt-3"
+          onClick={onSubmit}
+          disabled={loading}
+        >
+          {loading ? "Initializing " : "Continue to Payment"}
+        </button>
+      )}
+      {form.paymentMethod === "cod" && (
+        <>
+          <button
+            type="button"
+            className="theme-btn text-center w-100 mt-3"
+            onClick={onSubmit}
+            disabled={loading}
+          >
+            {loading ? "Placing Order..." : "Place Order"}
+          </button>
+
+          {errors.submit && (
+            <div className="alert alert-danger mt-2">{errors.submit}</div>
+          )}
+        </>
       )}
     </div>
   );

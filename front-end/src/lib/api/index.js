@@ -3,6 +3,7 @@ export * from "./main/categoryApi";
 export * from "./main/authApi";
 export * from "./main/orderApi";
 export * from "./main/wishlistApi";
+export * from "./main/stripeApi";
 export * from "./admin/attributeApi";
 export * from "./admin/statsApi";
 export * from "./admin/categoryApi";
