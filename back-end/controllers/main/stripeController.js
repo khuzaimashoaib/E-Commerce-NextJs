@@ -8,34 +8,42 @@ const getStripe = () => new Stripe(process.env.STRIPE_SECRET_KEY);
 export const createStripeSession = async (req, res) => {
   try {
     const stripe = getStripe();
+
     const { items, customerInfo, shipping, orderNumber } = req.body;
 
     if (!items || items.length === 0) {
       return res.status(400).json({ message: "No items in order" });
     }
+    // const subtotal = items.reduce(
+    //   (total, item) => total + item.price * item.quantity,
+    //   0,
+    // );
 
+    // const total = subtotal + Number(shipping || 0);
     const lineItems = items.map((item) => ({
       price_data: {
         currency: "usd",
         product_data: {
           name: item.name,
-
           images: item.image
             ? [
-                `${process.env.CLIENT_URL || "http://localhost:3000"}${item.image}`,
+                `${process.env.CLIENT_URL || "http://localhost:3000"}${
+                  item.image
+                }`,
               ]
             : [],
         },
-        unit_amount: Math.round(item.price * 100), // Stripe uses cents
+        unit_amount: Math.round(item.price * 100),
       },
       quantity: item.quantity,
     }));
-
     if (shipping > 0) {
       lineItems.push({
         price_data: {
           currency: "usd",
-          product_data: { name: "Shipping" },
+          product_data: {
+            name: "Shipping",
+          },
           unit_amount: Math.round(shipping * 100),
         },
         quantity: 1,
@@ -43,21 +51,27 @@ export const createStripeSession = async (req, res) => {
     }
 
     const session = await stripe.checkout.sessions.create({
-      ui_mode: "embedded_page",
+      ui_mode: "elements",
       mode: "payment",
       line_items: lineItems,
       customer_email: customerInfo?.email || undefined,
-      payment_method_types: ["card"],
-      return_url: `${process.env.CLIENT_URL || "http://localhost:3000"}/order-confirmation?session_id={CHECKOUT_SESSION_ID}&orderNumber=${orderNumber}`,
+      return_url: `${
+        process.env.CLIENT_URL || "http://localhost:3000"
+      }/order-confirmation?session_id={CHECKOUT_SESSION_ID}`,
+
       metadata: {
         orderNumber,
         customerName: `${customerInfo?.firstName} ${customerInfo?.lastName}`,
       },
     });
 
-    res.json({ clientSecret: session.client_secret });
+    res.json({
+      clientSecret: session.client_secret,
+    });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({
+      message: error.message,
+    });
   }
 };
 
@@ -66,18 +80,29 @@ export const createStripeSession = async (req, res) => {
 export const verifyStripeSession = async (req, res) => {
   try {
     const stripe = getStripe();
+
     const { sessionId, orderData } = req.body;
+
+    if (!sessionId) {
+      return res.status(400).json({
+        message: "Stripe session ID is required",
+      });
+    }
+
     const session = await stripe.checkout.sessions.retrieve(sessionId);
 
     if (session.payment_status !== "paid") {
-      return res.status(400).json({ message: "Payment not completed" });
+      return res.status(400).json({
+        message: "Payment not completed",
+      });
     }
 
     const existingOrder = await Order.findOne({
       orderNumber: orderData.orderNumber,
     });
+
     if (existingOrder) {
-      return res.json(existingOrder); // return existing if duplicate
+      return res.json(existingOrder);
     }
 
     const order = await Order.create({
@@ -90,6 +115,10 @@ export const verifyStripeSession = async (req, res) => {
 
     res.status(201).json(order);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("Stripe Verify Error:", error);
+
+    res.status(500).json({
+      message: error.message,
+    });
   }
 };

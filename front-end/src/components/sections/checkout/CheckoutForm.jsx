@@ -221,11 +221,13 @@ export default function CheckoutForm({
                   Secure payment powered by Stripe. Your card details are
                   encrypted.
                 </p>
-                <StripePaymentForm
-                  clientSecret={stripeClientSecret}
-                  onSuccess={onStripeSuccess}
-                  onError={onStripeError}
-                />
+
+                {stripeClientSecret && (
+                  <StripePaymentForm
+                    clientSecret={stripeClientSecret}
+                    onError={onStripeError}
+                  />
+                )}
               </div>
             )}
           </div>
@@ -239,7 +241,7 @@ export default function CheckoutForm({
           onClick={onSubmit}
           disabled={loading}
         >
-          {loading ? "Initializing " : "Continue to Payment"}
+          {loading ? "Initializing..." : "Continue to Payment"}
         </button>
       )}
       {form.paymentMethod === "cod" && (

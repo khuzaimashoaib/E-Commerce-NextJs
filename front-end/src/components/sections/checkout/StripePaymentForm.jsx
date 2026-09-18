@@ -13,62 +13,42 @@ const stripePromise = loadStripe(
 );
 
 function StripeForm({ onSuccess, onError }) {
-  const checkoutState = useCheckoutElements();
+  const result = useCheckoutElements();
   const [loading, setLoading] = useState(false);
 
-  if (checkoutState.type === "loading") {
-    return (
-      <div className="text-center py-4">
-        <i className="fa-solid fa-spinner fa-spin me-2"></i>
-        Loading payment form...
-      </div>
-    );
-  }
-
-  if (checkoutState.type === "error") {
-    return (
-      <div className="alert alert-danger">{checkoutState.error.message}</div>
-    );
-  }
-
   const handlePay = async () => {
+    if (result.type !== "success" || !result.checkout.canConfirm) {
+      return;
+    }
+
     setLoading(true);
+
     try {
-      const result = await checkoutState.checkout.confirm();
-      if (result.type === "error") {
-        onError(result.error.message);
-      } else {
-        onSuccess();
+      const confirmResult = await result.checkout.confirm();
+
+      if (confirmResult.type === "error") {
+        onError(confirmResult.error.message);
       }
-    } catch (err) {
-      onError(err.message);
+    } catch (error) {
+      onError(error.message || "Payment failed. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div>
-      <PaymentElement options={{ layout: "accordion" }} />
+    <>
+      <PaymentElement />
+
       <button
         type="button"
         className="theme-btn text-center w-100 mt-3"
         onClick={handlePay}
-        disabled={!checkoutState.checkout.canConfirm || loading}
+        disabled={!result.checkout || loading}
       >
-        {loading ? (
-          <>
-            <i className="fa-solid fa-spinner fa-spin me-2"></i>
-            Processing...
-          </>
-        ) : (
-          <>
-            <i className="fa-solid fa-lock me-2"></i>
-            Pay Now
-          </>
-        )}
+        {loading ? "Processing..." : "Pay Now"}
       </button>
-    </div>
+    </>
   );
 }
 
@@ -77,15 +57,8 @@ export default function StripePaymentForm({
   onSuccess,
   onError,
 }) {
-  console.log("StripePaymentForm clientSecret:", clientSecret);
-
   if (!clientSecret) {
-    return (
-      <div className="text-center py-4">
-        <i className="fa-solid fa-spinner fa-spin me-2"></i>
-        Initializing payment...
-      </div>
-    );
+    return <div className="text-center py-4">Initializing payment...</div>;
   }
 
   return (
@@ -93,18 +66,6 @@ export default function StripePaymentForm({
       stripe={stripePromise}
       options={{
         clientSecret,
-        // elementsOptions: {
-        //   appearance: {
-        //     theme: "stripe",
-        //     variables: {
-        //       colorPrimary: "#1a1a2e",
-        //       colorBackground: "#ffffff",
-        //       colorText: "#333333",
-        //       borderRadius: "8px",
-        //       fontFamily: "inherit",
-        //     },
-        //   },
-        // },
       }}
     >
       <StripeForm onSuccess={onSuccess} onError={onError} />

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCartContext } from "@/lib/context/CartContext";
 import CheckoutForm from "./CheckoutForm";
 import CheckoutOrderSummary from "./CheckoutOrderSummary";
@@ -17,27 +18,31 @@ export default function CheckoutClient() {
     handlePlaceOrder,
     onPaymentMethodChange,
     stripeClientSecret,
+    handleStripeError,
   } = useCheckout();
 
   if (!cartLoaded) {
     return <p className="text-center py-5">Loading...</p>;
   }
 
+  // Empty cart
+  if (cartItems.length === 0) {
+    return (
+      <div className="text-center py-5">
+        <h3 className="mb-3">No items to checkout</h3>
+        <Link href="/shop" className="theme-btn">
+          Continue Shopping
+        </Link>
+      </div>
+    );
+  }
+
   return (
     <div className="shop-cart-section section-padding fix section-bg">
       <div className="container">
         <div className="checkout-main-item">
-          {stripeClientSecret ? (
-            <StripePaymentForm
-              clientSecret={stripeClientSecret}
-              onSuccess={() => {
-                console.log("Payment successful");
-              }}
-              onError={(message) => {
-                console.error("Stripe payment error:", message);
-              }}
-            />
-          ) : (
+          {/* Left — Form always visible */}
+          <div>
             <CheckoutForm
               form={form}
               errors={errors}
@@ -46,9 +51,11 @@ export default function CheckoutClient() {
               loading={loading}
               onPaymentMethodChange={onPaymentMethodChange}
               stripeClientSecret={stripeClientSecret}
+              onStripeError={handleStripeError}
             />
-          )}
+          </div>
 
+          {/* Right — Order Summary always visible */}
           <CheckoutOrderSummary />
         </div>
       </div>

@@ -1,11 +1,11 @@
 "use client";
 
-import { useCartContext } from "../context/CartContext";
 import { useState } from "react";
-import { getCartTotal, getShipping } from "../utils/cartUtils";
+import { useCartContext } from "@/lib/context/CartContext";
 import { useRouter } from "next/navigation";
-import { createOrder, createStripeSession, verifyStripeSession } from "../api";
-
+import { getShipping, getCartTotal } from "@/lib/utils/cartUtils";
+import { createOrder, createStripeSession } from "../api";
+import toast from "react-hot-toast";
 const DEFAULT_FORM = {
   firstName: "",
   lastName: "",
@@ -24,8 +24,9 @@ function generateOrderNumber() {
 }
 
 export default function useCheckout() {
-  const router = useRouter();
   const { cartItems, subtotal, clearCart } = useCartContext();
+  const router = useRouter();
+
   const [form, setForm] = useState(DEFAULT_FORM);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
@@ -49,6 +50,11 @@ export default function useCheckout() {
       ...prev,
       paymentMethod: method,
     }));
+
+    if (method === "cod") {
+      setStripeClientSecret(null);
+      sessionStorage.removeItem("pending_stripe_order");
+    }
   };
   const validate = () => {
     const newErrors = {};
@@ -59,8 +65,6 @@ export default function useCheckout() {
     if (!form.country.trim()) newErrors.country = "Country is required";
     if (!form.city.trim()) newErrors.city = "City is required";
     if (!form.street.trim()) newErrors.street = "Street is required";
-    // if (!form.postalCode.trim())
-    //   newErrors.postalCode = "Postal code is required";
     return newErrors;
   };
 
@@ -72,21 +76,39 @@ export default function useCheckout() {
     }
 
     setLoading(true);
-
     try {
       if (form.paymentMethod === "stripe") {
-        const session = await createStripeSession({
+        const orderNumber = generateOrderNumber();
+
+        const orderData = {
+          orderNumber,
+          customerInfo: form,
+          items: cartItems,
+          subtotal,
+          shipping,
+          total,
+          paymentMethod: "Card (Stripe)",
+          status: "processing",
+        };
+
+        sessionStorage.setItem(
+          "pending_stripe_order",
+          JSON.stringify(orderData),
+        );
+
+        const { clientSecret } = await createStripeSession({
           items: cartItems,
           customerInfo: form,
           shipping,
           orderNumber,
         });
 
-        console.log("Stripe session response:", session);
-        setStripeClientSecret(session.clientSecret);
+        setStripeClientSecret(clientSecret);
 
+        toast.success("Payment form ready!");
         return;
       }
+
       const orderData = {
         orderNumber: generateOrderNumber(),
         customerInfo: form,
@@ -98,10 +120,9 @@ export default function useCheckout() {
         status: "pending",
       };
 
-      // ← Save to backend instead of sessionStorage
       const savedOrder = await createOrder(orderData);
 
-      // Store order ID for confirmation page
+      // Store for confirmation page
       sessionStorage.setItem(
         "last_order",
         JSON.stringify({
@@ -121,13 +142,19 @@ export default function useCheckout() {
       );
 
       clearCart();
+      toast.success("Order placed successfully!");
       router.push("/order-confirmation");
     } catch (error) {
-      console.error("Order failed:", error.message);
-      setErrors({ submit: "Failed to place order. Please try again." });
+      toast.error("Failed to place order. Please try again.");
+      setErrors({ submit: error.message });
     } finally {
       setLoading(false);
     }
+  };
+
+  // Called if Stripe payment fails
+  const handleStripeError = (message) => {
+    toast.error(message || "Payment failed. Please try again.");
   };
   return {
     form,
@@ -139,5 +166,6 @@ export default function useCheckout() {
     handleChange,
     handlePlaceOrder,
     onPaymentMethodChange,
+    handleStripeError,
   };
 }
