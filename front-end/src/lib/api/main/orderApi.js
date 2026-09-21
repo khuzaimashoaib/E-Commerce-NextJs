@@ -43,3 +43,17 @@ export async function updateOrderStatus(id, status) {
   if (!res.ok) throw new Error(json.message || "Failed to update order");
   return json;
 }
+export const updatePaymentStatus = async (id, paymentStatus) => {
+  const res = await fetch(`${API_URL}/admin/orders/${id}/payment-status`, {
+    method: "PUT",
+    ...defaultOptions,
+    body: JSON.stringify({ paymentStatus }),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || "Failed to update payment status");
+  }
+
+  return res.json();
+};
