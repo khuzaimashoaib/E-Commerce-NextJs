@@ -19,7 +19,6 @@ const COLUMNS = [
   "Total",
   "Method",
   "Payment",
-  "Status",
   "Actions",
 ];
 const STATUSES = [
@@ -249,11 +248,6 @@ export default function OrdersClient() {
                 >
                   <i className={payStatusMeta.icon}></i> {payStatusMeta.label}
                 </span>
-              </td>
-
-              {/* Status Badge */}
-              <td>
-                <AdminBadge status={order.paymentStatus} />
               </td>
 
               {/* Actions — status dropdown */}
